@@ -1,0 +1,37 @@
+{
+  "name": "sharifiasldev-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Strapi application",
+  "license": "MIT",
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "scripts": {
+    "build": "cross-env NODE_ENV=production strapi build",
+    "deploy": "strapi deploy",
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "@strapi/plugin-cloud": "4.25.23",
+    "@strapi/plugin-i18n": "4.25.23",
+    "@strapi/plugin-users-permissions": "4.25.23",
+    "@strapi/strapi": "4.25.23",
+    "better-sqlite3": "8.6.0",
+    "cross-env": "^10.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "5.3.4",
+    "strapi-plugin-responsive-image": "^0.5.0",
+    "styled-components": "5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0 <=20.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "ee27872f-c7b2-4236-9868-db5e1b1431bb"
+  }
+}

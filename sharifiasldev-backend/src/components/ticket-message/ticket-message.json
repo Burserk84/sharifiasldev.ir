@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_ticket_message_ticket_messages",
+  "info": {
+    "displayName": "TicketMessage"
+  },
+  "options": {},
+  "attributes": {
+    "message": {
+      "type": "text"
+    },
+    "isResponse": {
+      "type": "boolean"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "sentAt": {
+      "type": "datetime"
+    }
+  }
+}

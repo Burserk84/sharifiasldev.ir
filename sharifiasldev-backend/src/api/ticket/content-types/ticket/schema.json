@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tickets",
+  "info": {
+    "singularName": "ticket",
+    "pluralName": "tickets",
+    "displayName": "Ticket",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "Open",
+        "In Progress",
+        "Closed"
+      ]
+    },
+    "department": {
+      "type": "enumeration",
+      "enum": [
+        "Technical Support",
+        "Sales"
+      ]
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "relatedProduct": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product",
+      "inversedBy": "ticket"
+    },
+    "messages": {
+      "type": "component",
+      "repeatable": true,
+      "component": "ticket-message.ticket-message"
+    }
+  }
+}
