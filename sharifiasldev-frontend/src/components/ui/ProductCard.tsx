@@ -4,7 +4,7 @@ import type { Product } from "@/lib/definitions";
 
 export default function ProductCard({ product }: { product: Product }) {
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
 
   // Access all properties via the 'attributes' object
   const { name, price, productImage, slug } = product.attributes;

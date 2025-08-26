@@ -11,7 +11,7 @@ export async function PUT(request: Request) {
   // Get all possible fields from the request body
   const body = await request.json();
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
 
   try {
     const res = await fetch(`${STRAPI_URL}/api/users/${session.user.id}`, {

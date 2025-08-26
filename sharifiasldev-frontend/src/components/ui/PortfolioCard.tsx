@@ -8,7 +8,7 @@ interface PortfolioCardProps {
 
 export default function PortfolioCard({ post }: PortfolioCardProps) {
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
 
   const { title, technologies, slug, coverImage } = post.attributes;
 

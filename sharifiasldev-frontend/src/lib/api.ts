@@ -6,7 +6,7 @@ import type { Category, PortfolioItem, Product, Post } from "./definitions";
  */
 
 const STRAPI_URL =
-  process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+  process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
 
 /**
  * A generic helper function to fetch data from the Strapi API.
@@ -88,7 +88,7 @@ export async function searchContent(query: string): Promise<unknown[]> {
   if (!query) return [];
 
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
 
   // Define the endpoints to search
   const endpoints = [
@@ -202,7 +202,7 @@ export async function getUserOrders(jwt: string): Promise<unknown[]> {
  */
 export async function getUserTickets(jwt: string): Promise<unknown[]> {
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
 
   // Call our new custom endpoint
   const res = await fetch(`${STRAPI_URL}/api/tickets/me`, {

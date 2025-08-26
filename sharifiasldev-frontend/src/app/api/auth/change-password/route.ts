@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const body = await request.json();
   const { currentPassword, newPassword } = body;
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
 
   try {
     const res = await fetch(`${STRAPI_URL}/api/auth/change-password`, {

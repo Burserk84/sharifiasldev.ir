@@ -57,7 +57,7 @@ export async function POST(
   const { ticketId } = params; // Correctly get the ticketId
   const { message } = await request.json();
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
 
   try {
     // Call our new custom and secure reply endpoint

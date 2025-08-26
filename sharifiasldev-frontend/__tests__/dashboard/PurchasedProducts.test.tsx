@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import PurchasedProducts from "@/components/dashboard/PurchasedProducts";
 
 // ✨ FIX: Define the environment variable needed by the component
-process.env.NEXT_PUBLIC_STRAPI_URL = "http://localhost:1337";
+process.env.NEXT_PUBLIC_STRAPI_URL = "process.env.NEXT_PUBLIC_STRAPI_URL";
 
 const mockFetch = jest.spyOn(global, "fetch");
 

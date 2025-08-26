@@ -9,7 +9,7 @@ interface PostCardProps {
 
 export default function PostCard({ post, className = "" }: PostCardProps) {
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
 
   // Correctly access all data from post.attributes
   const { title, slug, coverImage } = post.attributes;

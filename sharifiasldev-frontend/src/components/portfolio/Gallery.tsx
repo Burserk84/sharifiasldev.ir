@@ -13,7 +13,7 @@ interface GalleryProps {
 export default function Gallery({ images }: GalleryProps) {
   const [index, setIndex] = useState(-1);
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
 
   const slides = images.map((img) => ({
     src: `${STRAPI_URL}${img.attributes.url}`,

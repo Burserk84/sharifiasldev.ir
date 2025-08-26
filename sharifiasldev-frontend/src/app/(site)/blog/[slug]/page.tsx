@@ -42,7 +42,7 @@ export default async function PostPage({
   const allPosts = await getPosts();
   const relatedPosts = allPosts.filter((p) => p.id !== postData.id).slice(0, 3);
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
   const imageUrl = post.coverImage?.data?.attributes?.url
     ? `${STRAPI_URL}${post.coverImage.data.attributes.url}`
     : null;

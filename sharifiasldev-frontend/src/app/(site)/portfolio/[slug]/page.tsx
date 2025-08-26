@@ -70,7 +70,7 @@ export default async function PortfolioItemPage({
   const nextItem = allItems[currentIndex + 1];
 
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
+    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
   const imageUrl = item.coverImage?.data?.attributes?.url
     ? `${STRAPI_URL}${item.coverImage.data.attributes.url}`
     : "https://placehold.co/1200x600/1f2937/f97616?text=Project+Image";
