@@ -79,4 +79,3 @@ npm run dev
 
   - **فرانت‌اند (این ریپازیتوری):** در دامنه اصلی `sharifiasldev.ir` سرو می‌شود.
   - **بک‌اند (Strapi):** در ساب‌دامین `api.sharifiasldev.ir` قرار دارد.
-```
