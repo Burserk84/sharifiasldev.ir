@@ -1,81 +1,77 @@
-````
-# وب‌سایت فول-استک SharifiaslDev
+# SharifiaslDev Full-Stack Website
 
 ![sharifiasldev.ir](https://sharifiasldev.ir/images/og-image.png)
 
-این ریپازیتوری شامل کدهای **فرانت‌اند** وب‌سایت شخصی من، [sharifiasldev.ir](https://sharifiasldev.ir) است. این پروژه یک وب‌سایت کامل شامل پورتفولیو، وبلاگ و فروشگاه است که به عنوان جایگزین نسخه قبلی که با وردپرس ساخته شده بود، از صفر و با معماری مدرن **Headless** توسعه داده شده است.
+This repository contains the **frontend** code for my personal website, [sharifiasldev.ir](https://sharifiasldev.ir). This project is a complete portfolio, blog, and e-commerce website, built from the ground up with a modern **Headless** architecture to replace the previous WordPress version.
 
-بک‌اند این پروژه با **Strapi** ساخته شده و در یک ریپازیتوری جداگانه قرار دارد.
-
----
-
-## ✨ ویژگی‌های اصلی
-
--   **معماری Headless:** جداسازی کامل فرانت‌اند از بک‌اند برای پرفورمنس و انعطاف‌پذیری بالاتر.
--   **محتوای داینامیک:** مدیریت کامل پورتفولیو، وبلاگ، محصولات و دسته‌بندی‌ها از طریق پنل ادمین Strapi.
--   **سیستم احراز هویت:** سیستم کامل ورود، ثبت‌نام و داشبورد کاربری با استفاده از **NextAuth.js**.
--   **داشبورد کاربری:**
-    -   ویرایش پروفایل و آپلود عکس پروفایل و کاور.
-    -   مشاهده محصولات خریداری شده و لینک‌های دانلود.
-    -   سیستم کامل تیکت پشتیبانی برای ارتباط با کاربران.
--   **فروشگاه:** صفحات داینامیک محصولات و دسته‌بندی‌های تو در تو با قابلیت جستجو و فیلتر.
--   **تست‌های جامع:** پوشش کامل تست‌های Unit/Integration با **Jest** و تست‌های End-to-End با **Cypress** برای تضمین پایداری اپلیکیشن.
+The backend for this project is built with **Strapi** and is located in a separate repository.
 
 ---
 
-## 🛠️ تکنولوژی‌های استفاده شده
+## ✨ Key Features
 
--   **فرانت‌اند:** Next.js 14 (App Router)
--   **زبان:** TypeScript
--   **استایل‌دهی:** Tailwind CSS
--   **احراز هویت:** NextAuth.js
--   **انیمیشن:** Framer Motion
--   **تست:** Jest, React Testing Library, Cypress
--   **بک‌اند:** Strapi (در ریپازیتوری دیگر)
+-   **Headless Architecture:** Complete separation of the frontend from the backend for higher performance and flexibility.
+-   **Dynamic Content:** Full management of the portfolio, blog, products, and categories through the Strapi admin panel.
+-   **Authentication System:** A complete login, registration, and user dashboard system using **NextAuth.js**.
+-   **User Dashboard:**
+    -   Edit profile, upload profile and cover images.
+    -   View purchased products and access download links.
+    -   A full support ticket system for user communication.
+-   **E-commerce Store:** Dynamic product pages and nested categories with search and filtering capabilities.
+-   **Comprehensive Testing:** Full test coverage with Unit/Integration tests using **Jest** and End-to-End tests using **Cypress** to ensure application stability.
 
 ---
 
-## 🚀 راه‌اندازی پروژه در حالت توسعه
+## 🛠️ Tech Stack
 
-برای اجرای این پروژه به صورت لوکال، مراحل زیر را دنبال کنید:
+-   **Frontend:** Next.js 14 (App Router)
+-   **Language:** TypeScript
+-   **Styling:** Tailwind CSS
+-   **Authentication:** NextAuth.js
+-   **Animation:** Framer Motion
+-   **Testing:** Jest, React Testing Library, Cypress
+-   **Backend:** Strapi (in a separate repository)
 
-۱. **کلون کردن ریپازیتوری:**
-```bash
-git clone [https://github.com/Burserk84/sharifiasldev.ir.git](https://github.com/Burserk84/sharifiasldev.ir.git)
-cd sharifiasldev.ir
-````
+---
 
-۲. **نصب وابستگی‌ها:**
+## 🚀 Getting Started (Local Development)
 
-```bash
-npm install
-```
+To run this project locally, follow these steps:
 
-۳. **تنظیم متغیرهای محیطی:**
-یک فایل به نام `.env.local` در ریشه پروژه بسازید و مقادیر زیر را در آن قرار دهید.
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/Burserk84/sharifiasldev.ir.git](https://github.com/Burserk84/sharifiasldev.ir.git)
+    cd sharifiasldev.ir
+    ```
 
-```env
-# آدرس بک‌اند استراپی شما
-NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-# مقادیر مربوط به NextAuth.js
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=YOUR_GENERATED_SECRET
-```
+3.  **Set up environment variables:**
+    Create a file named `.env.local` in the root of the project and add the following values.
+    ```env
+    # The URL of your Strapi backend
+    NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
 
-۴. **اجرای سرور توسعه:**
+    # Values for NextAuth.js
+    NEXTAUTH_URL=http://localhost:3000
+    NEXTAUTH_SECRET=YOUR_GENERATED_SECRET
+    ```
 
-```bash
-npm run dev
-```
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
+    You can now view the project at `http://localhost:3000`.
 
-حالا می‌توانید پروژه را در آدرس `http://localhost:3000` مشاهده کنید.
+---
 
------
+## ☁️ Deployment
 
-## ☁️ استقرار (Deployment)
+This project is deployed as a full-stack application on a single **VPS**:
+-   **Frontend (This Repository):** Served on the main domain `sharifiasldev.ir`.
+-   **Backend (Strapi):** Served on the subdomain `api.sharifiasldev.ir`.
 
-این پروژه به صورت فول-استک روی یک سرور **VPS** مستقر شده است:
-
-  - **فرانت‌اند (این ریپازیتوری):** در دامنه اصلی `sharifiasldev.ir` سرو می‌شود.
-  - **بک‌اند (Strapi):** در ساب‌دامین `api.sharifiasldev.ir` قرار دارد.
+Both applications are managed by Nginx acting as a reverse proxy.
