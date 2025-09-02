@@ -450,6 +450,7 @@ export interface ApiOrderOrder extends Schema.CollectionType {
 export interface ApiPortfolioPortfolio extends Schema.CollectionType {
   collectionName: 'portfolios';
   info: {
+    description: '';
     displayName: 'Portfolio';
     pluralName: 'portfolios';
     singularName: 'portfolio';
@@ -472,7 +473,7 @@ export interface ApiPortfolioPortfolio extends Schema.CollectionType {
     liveUrl: Attribute.String;
     publishedAt: Attribute.DateTime;
     slug: Attribute.UID<'api::portfolio.portfolio', 'title'>;
-    technologies: Attribute.String;
+    technologies: Attribute.JSON;
     title: Attribute.String;
     updatedAt: Attribute.DateTime;
     updatedBy: Attribute.Relation<
