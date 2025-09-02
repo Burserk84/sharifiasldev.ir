@@ -13,44 +13,64 @@ import { IPortfolio } from "@/lib/definitions";
  * @updated To handle structured JSON for features and technologies.
  */
 
-// Helper to flatten the complex technologies object into a single array of strings
+// Helper to flatten a valid technologies object
 function flattenTechnologies(
   technologies: IPortfolio["technologies"]
 ): string[] {
   if (!technologies) return [];
-
   const allTechs: string[] = [];
 
-  // Process frontend technologies
   if (technologies.frontend) {
     Object.values(technologies.frontend).forEach((tech) => {
-      if (Array.isArray(tech)) {
-        allTechs.push(...tech);
-      } else if (typeof tech === "string") {
-        allTechs.push(tech);
-      }
+      if (Array.isArray(tech)) allTechs.push(...tech);
+      else if (typeof tech === "string") allTechs.push(tech);
     });
   }
 
-  // Process backend technologies
   if (technologies.backend) {
     Object.values(technologies.backend).forEach((tech) => {
-      if (Array.isArray(tech)) {
-        allTechs.push(...tech);
-      } else if (typeof tech === "string") {
-        allTechs.push(tech);
-      }
+      if (Array.isArray(tech)) allTechs.push(...tech);
+      else if (typeof tech === "string") allTechs.push(tech);
     });
   }
-
   return allTechs;
 }
+
+// 💡 NEW: Robust function to handle all possible technology formats
+function processTechnologies(techData: unknown): string[] {
+  if (!techData) return [];
+
+  // Case 1: It's already a valid object
+  if (typeof techData === 'object' && !Array.isArray(techData) && techData !== null) {
+    return flattenTechnologies(techData as IPortfolio["technologies"]);
+  }
+
+  // Case 2: It's a string
+  if (typeof techData === 'string') {
+    const trimmedData = techData.trim();
+    // Sub-case A: It's a stringified JSON object
+    if (trimmedData.startsWith('{') && trimmedData.endsWith('}')) {
+      try {
+        const parsedObject = JSON.parse(trimmedData);
+        return flattenTechnologies(parsedObject);
+      } catch (e) {
+        console.error("Failed to parse technologies JSON string:", e);
+        return []; // Return empty on parsing error
+      }
+    }
+    // Sub-case B: It's a simple comma-separated string
+    return trimmedData.split(',').map(t => t.trim());
+  }
+
+  // Fallback for any other unexpected type
+  return [];
+}
+
 
 function FeaturesList({ features }: { features: unknown }) {
   if (!Array.isArray(features) || features.length === 0) {
     return null;
   }
-
   return (
     <div className="mt-12">
       <h2 className="text-3xl font-bold text-white mb-6">ویژگی‌های پروژه</h2>
@@ -80,7 +100,6 @@ function FeaturesList({ features }: { features: unknown }) {
   );
 }
 
-// Helper component for skill badges
 function SkillBadge({ skill }: { skill: string }) {
   return (
     <span className="bg-gray-700 text-gray-300 text-sm font-medium me-2 px-3 py-1 rounded-full">
@@ -103,7 +122,6 @@ export default async function PortfolioItemPage({
 
   const item = itemData.attributes;
 
-  // Process navigation items
   const allItems = await getPortfolioItems();
   const currentIndex = allItems.findIndex((p) => p.id === itemData.id);
   const prevItem = allItems[currentIndex - 1];
@@ -116,20 +134,14 @@ export default async function PortfolioItemPage({
 
   const galleryImages = item.gallery?.data;
 
-  // 💡 FIX: Parse technologies if it's a string
-  const technologiesObject =
-    typeof item.technologies === "string"
-      ? JSON.parse(item.technologies)
-      : item.technologies;
+  // Use the new robust processor for technologies
+  const allTechnologies = processTechnologies(item.technologies);
 
-  // Flatten technologies using the parsed object
-  const allTechnologies = flattenTechnologies(technologiesObject);
-
-  // Generate plain text description for SEO
-  const plainTextDescription = item.description
+  // 💡 FIX: Add safety check for description before mapping
+  const plainTextDescription = Array.isArray(item.description)
     ? item.description
         .map(
-          (block) => block.children?.map((child) => child.text).join("") || ""
+          (block: unknown) => block.children?.map((child: unknown) => child.text).join("") || ""
         )
         .join(" ")
         .substring(0, 160) + "..."
@@ -183,9 +195,7 @@ export default async function PortfolioItemPage({
           {/* Main Content: Description, Features, and Gallery */}
           <div className="prose prose-invert lg:prose-xl max-w-none text-right leading-loose">
             {item.description && <BlocksRenderer content={item.description} />}
-
             <FeaturesList features={item.features} />
-
             {galleryImages && galleryImages.length > 0 && (
               <div className="mt-12">
                 <h2 className="text-3xl font-bold text-white mb-4">
