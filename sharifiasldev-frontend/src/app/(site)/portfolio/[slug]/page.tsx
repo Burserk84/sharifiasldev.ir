@@ -9,68 +9,52 @@ import { IPortfolio } from "@/lib/definitions";
 
 /**
  * @file src/app/(site)/portfolio/[slug]/page.tsx
- * @description Renders a single, dynamic portfolio project page with full details.
- * @updated To handle structured JSON for features and technologies.
+ * @description Renders a portfolio project page, robustly handling multiple data formats.
  */
 
-// Helper to flatten a valid technologies object
-function flattenTechnologies(
-  technologies: IPortfolio["technologies"]
-): string[] {
-  if (!technologies) return [];
+// --- Technology Processing (Handles all formats) ---
+function flattenTechnologies(techs: IPortfolio["technologies"]): string[] {
+  if (!techs) return [];
   const allTechs: string[] = [];
-
-  if (technologies.frontend) {
-    Object.values(technologies.frontend).forEach((tech) => {
-      if (Array.isArray(tech)) allTechs.push(...tech);
-      else if (typeof tech === "string") allTechs.push(tech);
-    });
-  }
-
-  if (technologies.backend) {
-    Object.values(technologies.backend).forEach((tech) => {
-      if (Array.isArray(tech)) allTechs.push(...tech);
-      else if (typeof tech === "string") allTechs.push(tech);
-    });
-  }
+  ["frontend", "backend"].forEach((key) => {
+    if (techs[key as keyof typeof techs]) {
+      Object.values(techs[key as keyof typeof techs]).forEach((tech) => {
+        if (Array.isArray(tech)) allTechs.push(...tech);
+        else if (typeof tech === "string") allTechs.push(tech);
+      });
+    }
+  });
   return allTechs;
 }
 
-// 💡 NEW: Robust function to handle all possible technology formats
 function processTechnologies(techData: unknown): string[] {
   if (!techData) return [];
-
-  // Case 1: It's already a valid object
-  if (typeof techData === 'object' && !Array.isArray(techData) && techData !== null) {
+  if (
+    typeof techData === "object" &&
+    !Array.isArray(techData) &&
+    techData !== null
+  ) {
     return flattenTechnologies(techData as IPortfolio["technologies"]);
   }
-
-  // Case 2: It's a string
-  if (typeof techData === 'string') {
-    const trimmedData = techData.trim();
-    // Sub-case A: It's a stringified JSON object
-    if (trimmedData.startsWith('{') && trimmedData.endsWith('}')) {
+  if (typeof techData === "string") {
+    const trimmed = techData.trim();
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
       try {
-        const parsedObject = JSON.parse(trimmedData);
-        return flattenTechnologies(parsedObject);
+        return flattenTechnologies(JSON.parse(trimmed));
       } catch (e) {
-        console.error("Failed to parse technologies JSON string:", e);
-        return []; // Return empty on parsing error
+        return e;
       }
     }
-    // Sub-case B: It's a simple comma-separated string
-    return trimmedData.split(',').map(t => t.trim());
+    return trimmed.split(",").map((t) => t.trim());
   }
-
-  // Fallback for any other unexpected type
   return [];
 }
 
+// --- Feature Components (Handles both Table and List) ---
 
-function FeaturesList({ features }: { features: unknown }) {
-  if (!Array.isArray(features) || features.length === 0) {
-    return null;
-  }
+// For NEW data (array of strings)
+function FeaturesList({ features }: { features: string[] | null }) {
+  if (!features || features.length === 0) return null;
   return (
     <div className="mt-12">
       <h2 className="text-3xl font-bold text-white mb-6">ویژگی‌های پروژه</h2>
@@ -92,13 +76,45 @@ function FeaturesList({ features }: { features: unknown }) {
                 clipRule="evenodd"
               />
             </svg>
-            <span>{typeof feature === "string" ? feature : ""}</span>
+            <span>{feature}</span>
           </li>
         ))}
       </ul>
     </div>
   );
 }
+
+// For OLD data (key-value object)
+function FeaturesTable({
+  features,
+}: {
+  features: { [key: string]: string } | null;
+}) {
+  if (!features || typeof features !== "object" || Array.isArray(features))
+    return null;
+  const entries = Object.entries(features);
+  if (entries.length === 0) return null;
+  return (
+    <div className="mt-12">
+      <h2 className="text-3xl font-bold text-white mb-4">ویژگی‌های پروژه</h2>
+      <div className="bg-gray-800 rounded-lg border border-gray-700">
+        {entries.map(([key, value], index) => (
+          <div
+            key={key}
+            className={`flex justify-between p-4 text-sm ${
+              index < entries.length - 1 ? "border-b border-gray-700" : ""
+            }`}
+          >
+            <dt className="text-gray-400">{key}</dt>
+            <dd className="font-semibold text-white">{value}</dd>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// --- Main Page Component ---
 
 function SkillBadge({ skill }: { skill: string }) {
   return (
@@ -115,10 +131,7 @@ export default async function PortfolioItemPage({
 }) {
   const { slug } = params;
   const itemData = await getPortfolioItemBySlug(slug);
-
-  if (!itemData) {
-    notFound();
-  }
+  if (!itemData) notFound();
 
   const item = itemData.attributes;
 
@@ -133,15 +146,13 @@ export default async function PortfolioItemPage({
     : "https://placehold.co/1200x600/1f2937/f97616?text=Project+Image";
 
   const galleryImages = item.gallery?.data;
-
-  // Use the new robust processor for technologies
   const allTechnologies = processTechnologies(item.technologies);
 
-  // 💡 FIX: Add safety check for description before mapping
   const plainTextDescription = Array.isArray(item.description)
     ? item.description
         .map(
-          (block: unknown) => block.children?.map((child: unknown) => child.text).join("") || ""
+          (block: unknown) =>
+            block.children?.map((child: unknown) => child.text).join("") || ""
         )
         .join(" ")
         .substring(0, 160) + "..."
@@ -192,10 +203,19 @@ export default async function PortfolioItemPage({
             />
           </div>
 
-          {/* Main Content: Description, Features, and Gallery */}
+          {/* Main Content */}
           <div className="prose prose-invert lg:prose-xl max-w-none text-right leading-loose">
             {item.description && <BlocksRenderer content={item.description} />}
-            <FeaturesList features={item.features} />
+
+            {/* 💡 AUTOMATICALLY CHOOSES THE RIGHT COMPONENT */}
+            {Array.isArray(item.features) ? (
+              <FeaturesList features={item.features as string[]} />
+            ) : (
+              <FeaturesTable
+                features={item.features as { [key: string]: string }}
+              />
+            )}
+
             {galleryImages && galleryImages.length > 0 && (
               <div className="mt-12">
                 <h2 className="text-3xl font-bold text-white mb-4">
@@ -233,7 +253,7 @@ export default async function PortfolioItemPage({
           </div>
         </article>
 
-        {/* Next/Previous Project Navigation */}
+        {/* Navigation */}
         <nav className="flex justify-between items-center mt-24 border-t border-gray-700 pt-8 max-w-4xl mx-auto">
           <div>
             {prevItem && (
