@@ -46,9 +46,10 @@ function flattenTechnologies(
   return allTechs;
 }
 
-// New Helper component for the features list
-function FeaturesList({ features }: { features: string[] | null }) {
-  if (!features || features.length === 0) return null;
+function FeaturesList({ features }: { features: unknown }) {
+  if (!Array.isArray(features) || features.length === 0) {
+    return null;
+  }
 
   return (
     <div className="mt-12">
@@ -71,7 +72,7 @@ function FeaturesList({ features }: { features: string[] | null }) {
                 clipRule="evenodd"
               />
             </svg>
-            <span>{feature}</span>
+            <span>{typeof feature === "string" ? feature : ""}</span>
           </li>
         ))}
       </ul>
