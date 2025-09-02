@@ -5,11 +5,79 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import Gallery from "@/components/portfolio/Gallery";
 import { BlocksRenderer } from "@strapi/blocks-react-renderer";
+import { IPortfolio } from "@/lib/definitions";
 
 /**
  * @file src/app/(site)/portfolio/[slug]/page.tsx
  * @description Renders a single, dynamic portfolio project page with full details.
+ * @updated To handle structured JSON for features and technologies.
  */
+
+// Helper to flatten the complex technologies object into a single array of strings
+function flattenTechnologies(
+  technologies: IPortfolio["technologies"]
+): string[] {
+  if (!technologies) return [];
+
+  const allTechs: string[] = [];
+
+  // Process frontend technologies
+  if (technologies.frontend) {
+    Object.values(technologies.frontend).forEach((tech) => {
+      if (Array.isArray(tech)) {
+        allTechs.push(...tech);
+      } else if (typeof tech === "string") {
+        allTechs.push(tech);
+      }
+    });
+  }
+
+  // Process backend technologies
+  if (technologies.backend) {
+    Object.values(technologies.backend).forEach((tech) => {
+      if (Array.isArray(tech)) {
+        allTechs.push(...tech);
+      } else if (typeof tech === "string") {
+        allTechs.push(tech);
+      }
+    });
+  }
+
+  return allTechs;
+}
+
+// New Helper component for the features list
+function FeaturesList({ features }: { features: string[] | null }) {
+  if (!features || features.length === 0) return null;
+
+  return (
+    <div className="mt-12">
+      <h2 className="text-3xl font-bold text-white mb-6">ویژگی‌های پروژه</h2>
+      <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 list-none p-0">
+        {features.map((feature, index) => (
+          <li
+            key={index}
+            className="flex items-center gap-x-3 text-lg text-gray-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-5 h-5 flex-shrink-0 text-orange-400"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 // Helper component for skill badges
 function SkillBadge({ skill }: { skill: string }) {
@@ -20,42 +88,12 @@ function SkillBadge({ skill }: { skill: string }) {
   );
 }
 
-// Helper component for the features table
-function FeaturesTable({
-  features,
-}: {
-  features: { [key: string]: string } | null;
-}) {
-  if (!features) return null;
-  const entries = Object.entries(features);
-  if (entries.length === 0) return null;
-
-  return (
-    <div className="mt-12">
-      <h2 className="text-3xl font-bold text-white mb-4">ویژگی‌های پروژه</h2>
-      <div className="bg-gray-800 rounded-lg border border-gray-700">
-        {entries.map(([key, value], index) => (
-          <div
-            key={key}
-            className={`flex justify-between p-4 text-sm ${
-              index < entries.length - 1 ? "border-b border-gray-700" : ""
-            }`}
-          >
-            <dt className="text-gray-400">{key}</dt>
-            <dd className="font-semibold text-white">{value}</dd>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default async function PortfolioItemPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const { slug } = await params;
+  const { slug } = params;
   const itemData = await getPortfolioItemBySlug(slug);
 
   if (!itemData) {
@@ -64,18 +102,23 @@ export default async function PortfolioItemPage({
 
   const item = itemData.attributes;
 
+  // Process navigation items
   const allItems = await getPortfolioItems();
   const currentIndex = allItems.findIndex((p) => p.id === itemData.id);
   const prevItem = allItems[currentIndex - 1];
   const nextItem = allItems[currentIndex + 1];
 
-  const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_URL || "process.env.NEXT_PUBLIC_STRAPI_URL";
+  const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "";
   const imageUrl = item.coverImage?.data?.attributes?.url
     ? `${STRAPI_URL}${item.coverImage.data.attributes.url}`
     : "https://placehold.co/1200x600/1f2937/f97616?text=Project+Image";
 
   const galleryImages = item.gallery?.data;
+
+  // Flatten technologies for display and metadata
+  const allTechnologies = flattenTechnologies(item.technologies);
+
+  // Generate plain text description for SEO
   const plainTextDescription = item.description
     ? item.description
         .map(
@@ -84,6 +127,7 @@ export default async function PortfolioItemPage({
         .join(" ")
         .substring(0, 160) + "..."
     : item.title;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
@@ -96,7 +140,7 @@ export default async function PortfolioItemPage({
       name: "امیرعلی شریفی اصل",
       url: "https://sharifiasldev.ir/about",
     },
-    keywords: item.technologies, // Use the technologies as keywords
+    keywords: allTechnologies.join(", "),
   };
 
   return (
@@ -111,31 +155,29 @@ export default async function PortfolioItemPage({
           <div className="text-center mb-12">
             <h1 className="text-5xl font-extrabold text-white">{item.title}</h1>
             <div className="flex flex-wrap gap-2 justify-center mt-6">
-              {item.technologies.split(",").map((tech) => (
-                <SkillBadge key={tech.trim()} skill={tech.trim()} />
+              {allTechnologies.map((tech) => (
+                <SkillBadge key={tech} skill={tech} />
               ))}
             </div>
           </div>
 
           {/* Cover Image */}
-          {imageUrl && (
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden mb-12 shadow-lg">
-              <Image
-                src={imageUrl}
-                alt={item.title}
-                fill
-                sizes="(max-width: 1024px) 100vw, 66vw"
-                className="object-cover"
-                priority
-              />
-            </div>
-          )}
+          <div className="relative w-full aspect-video rounded-lg overflow-hidden mb-12 shadow-lg">
+            <Image
+              src={imageUrl}
+              alt={item.title}
+              fill
+              sizes="(max-width: 1024px) 100vw, 66vw"
+              className="object-cover"
+              priority
+            />
+          </div>
 
           {/* Main Content: Description, Features, and Gallery */}
           <div className="prose prose-invert lg:prose-xl max-w-none text-right leading-loose">
             {item.description && <BlocksRenderer content={item.description} />}
 
-            <FeaturesTable features={item.features} />
+            <FeaturesList features={item.features} />
 
             {galleryImages && galleryImages.length > 0 && (
               <div className="mt-12">
@@ -160,22 +202,17 @@ export default async function PortfolioItemPage({
                 مشاهده وب‌سایت پروژه
               </Button>
             )}
-            <a
-              href="/Amirali-Sharifi-Asl-Resume.pdf"
-              download="Amirali-Sharifi-Asl-Resume.pdf"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 bg-transparent border border-gray-500 text-gray-200 hover:bg-gray-700 h-11 px-8"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-5 h-5 ml-2"
+            {item.repoUrl && (
+              <Button
+                href={item.repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="secondary"
+                size="lg"
               >
-                <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
-                <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
-              </svg>
-              دانلود رزومه
-            </a>
+                مشاهده سورس کد
+              </Button>
+            )}
           </div>
         </article>
 
