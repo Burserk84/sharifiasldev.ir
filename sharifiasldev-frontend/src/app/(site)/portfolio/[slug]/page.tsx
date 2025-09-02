@@ -116,8 +116,14 @@ export default async function PortfolioItemPage({
 
   const galleryImages = item.gallery?.data;
 
-  // Flatten technologies for display and metadata
-  const allTechnologies = flattenTechnologies(item.technologies);
+  // 💡 FIX: Parse technologies if it's a string
+  const technologiesObject =
+    typeof item.technologies === "string"
+      ? JSON.parse(item.technologies)
+      : item.technologies;
+
+  // Flatten technologies using the parsed object
+  const allTechnologies = flattenTechnologies(technologiesObject);
 
   // Generate plain text description for SEO
   const plainTextDescription = item.description
