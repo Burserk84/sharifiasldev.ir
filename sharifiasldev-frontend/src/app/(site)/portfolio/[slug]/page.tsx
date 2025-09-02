@@ -52,7 +52,6 @@ function processTechnologies(techData: unknown): string[] {
 
 // --- Feature Components (Handles both Table and List) ---
 
-// For NEW data (array of strings)
 function FeaturesList({ features }: { features: string[] | null }) {
   if (!features || features.length === 0) return null;
   return (
@@ -84,7 +83,6 @@ function FeaturesList({ features }: { features: string[] | null }) {
   );
 }
 
-// For OLD data (key-value object)
 function FeaturesTable({
   features,
 }: {
@@ -148,6 +146,17 @@ export default async function PortfolioItemPage({
   const galleryImages = item.gallery?.data;
   const allTechnologies = processTechnologies(item.technologies);
 
+  // 💡 FIX: Parse features if it's a string, just like technologies.
+  let processedFeatures = item.features;
+  if (typeof processedFeatures === "string") {
+    try {
+      processedFeatures = JSON.parse(processedFeatures);
+    } catch (e) {
+      console.error("Could not parse features string, treating as empty." + e);
+      processedFeatures = []; // Fallback to an empty array on error
+    }
+  }
+
   const plainTextDescription = Array.isArray(item.description)
     ? item.description
         .map(
@@ -207,12 +216,12 @@ export default async function PortfolioItemPage({
           <div className="prose prose-invert lg:prose-xl max-w-none text-right leading-loose">
             {item.description && <BlocksRenderer content={item.description} />}
 
-            {/* 💡 AUTOMATICALLY CHOOSES THE RIGHT COMPONENT */}
-            {Array.isArray(item.features) ? (
-              <FeaturesList features={item.features as string[]} />
+            {/* Use the newly parsed processedFeatures variable */}
+            {Array.isArray(processedFeatures) ? (
+              <FeaturesList features={processedFeatures as string[]} />
             ) : (
               <FeaturesTable
-                features={item.features as { [key: string]: string }}
+                features={processedFeatures as { [key: string]: string }}
               />
             )}
 
