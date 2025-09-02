@@ -1,0 +1,10 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://sharifiasldev.ir
+
+# Sitemaps
+Sitemap: https://sharifiasldev.ir/sitemap.xml
+Sitemap: https://sharifiasldev.ir/server-sitemap.xml
