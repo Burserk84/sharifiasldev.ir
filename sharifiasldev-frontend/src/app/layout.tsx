@@ -7,8 +7,23 @@ import "./globals.css";
 const vazirmatn = Vazirmatn({ subsets: ["latin", "arabic"] });
 
 export const metadata = {
-  title: "SharifiaslDev | شریفی اصل",
-  description: "وب‌سایت شخصی و نمونه کار امیرعلی شریفی اصل",
+  title: "Amirali Sharifi Asl | Full-Stack Developer",
+  description: "Full-Stack Developer specializing in building modern web applications with Next.js, Node.js, and TypeScript.",
+  openGraph: {
+    title: "Amirali Sharifi Asl | Full-Stack Developer",
+    description: "Full-Stack Developer specializing in building modern web applications with Next.js, Node.js, and TypeScript.",
+    url: "https://www.sharifiasldev.ir",
+    siteName: "Amirali Sharifi Asl Portfolio",
+    images: [
+      {
+        url: "https://www.sharifiasldev.ir/portfolio-preview.png",
+        width: 1200,
+        height: 627,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
