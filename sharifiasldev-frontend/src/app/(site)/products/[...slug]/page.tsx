@@ -1,5 +1,5 @@
 import { getProductsByCategory } from "@/lib/api";
-import ProductList from "@/components/products/ProductList"; // Import the interactive list
+import ProductList from "@/components/products/ProductList"; 
 import { Metadata } from "next";
 
 interface ProductCategoryPageProps {

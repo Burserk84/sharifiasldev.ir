@@ -16,7 +16,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const formattedPrice = new Intl.NumberFormat("fa-IR", {
     /* ... */
   })
-    .format(price * 10)
+    .format(price)
     .replace("ریال", "تومان");
 
   return (

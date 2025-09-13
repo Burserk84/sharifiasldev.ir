@@ -33,7 +33,6 @@ export default function ProductList({
       const queryParams = new URLSearchParams({ sort: sortBy });
       if (searchTerm) queryParams.append("_q", searchTerm);
 
-      // --- KEY CHANGE HERE ---
       // Use the correct filter format for the category slug
       if (categorySlug) {
         queryParams.append("filters[category][slug][$eq]", categorySlug);
