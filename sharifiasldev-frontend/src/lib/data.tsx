@@ -110,7 +110,7 @@ export const socialLinks = [
   },
   {
     name: "Telegram",
-    href: "https://t.me/Amirali_Sharifi_ASL",
+    href: "https://t.me/sharifiasl_dev",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
