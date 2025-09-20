@@ -5,6 +5,7 @@ import slugify from "slugify";
 import Sidebar from "@/components/blog/Sidebar";
 import PostCard from "@/components/blog/PostCard";
 import ContentRenderer from "@/components/blog/ContentRenderer";
+import CtaBanner from "@/components/ui/CtaBanner";
 
 export default async function PostPage({
   params,
@@ -105,7 +106,11 @@ export default async function PostPage({
               )}
               {/* ✨ 3. Use the BlocksRenderer with custom components for headings */}
               <div className="prose prose-invert lg:prose-xl max-w-none text-right leading-loose">
+                
                 <ContentRenderer content={contentWithIds} />
+                
+                <CtaBanner />
+                
               </div>
             </article>
           </main>

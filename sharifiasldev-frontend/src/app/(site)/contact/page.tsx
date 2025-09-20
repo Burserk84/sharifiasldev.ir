@@ -36,10 +36,10 @@ export default function ContactPage() {
       <div className="container mx-auto px-6 py-24">
         {/* Header Section */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-extrabold text-white">تماس با ما</h1>
+          <h1 className="text-4xl font-bold">تماس با من</h1>
           <p className="mt-4 text-lg text-gray-400">
-            برای هرگونه سوال، پیشنهاد یا درخواست پروژه، از راه‌های زیر با ما در
-            ارتباط باشید.
+            ایده‌ای در ذهن دارید یا برای پروژه خود به مشاوره نیاز دارید؟ فرم زیر
+            را پر کنید تا در اسرع وقت با شما تماس بگیرم.
           </p>
         </div>
 

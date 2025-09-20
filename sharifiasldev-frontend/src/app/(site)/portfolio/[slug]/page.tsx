@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import Gallery from "@/components/portfolio/Gallery";
 import { BlocksRenderer } from "@strapi/blocks-react-renderer";
 import { IPortfolio } from "@/lib/definitions";
+import CtaBanner from "@/components/ui/CtaBanner";
 
 /**
  * @file src/app/(site)/portfolio/[slug]/page.tsx
@@ -206,6 +207,7 @@ export default async function PortfolioItemPage({
                   گالری تصاویر
                 </h2>
                 <Gallery images={galleryImages} />
+                <CtaBanner />
               </div>
             )}
           </div>

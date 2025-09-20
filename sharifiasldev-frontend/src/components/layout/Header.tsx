@@ -36,15 +36,16 @@ export default async function Header() {
   const session = await getServerSession();
   const allCategories = await getCategories();
 
-  // Build the nested submenu for the store by finding top-level categories (those with no parent)
+  // Build the nested submenu for the store
   const storeSubmenu = buildMenuTree(allCategories, null);
 
   // This is the static part of your menu
   const staticMenu = [
     { title: "بلاگ", link: "/blog" },
     { title: "نمونه کارها", link: "/portfolio" },
-    { title: "تماس با ما", link: "/contact" },
-    { title: "درباره ما", link: "/about" },
+    { title: "خدمات", link: "https://devorastudio.ir" },
+    { title: "درباره من", link: "/about" },
+    { title: "تماس با من", link: "/contact" },
   ];
 
   const menu = [

@@ -5,7 +5,7 @@ import Image from "next/image";
 // API functions to fetch dynamic data from Strapi
 import { getPortfolioItems, getProducts } from "@/lib/api";
 // Static data arrays for content that doesn't change often
-import { pricingPlans, trustFeatures } from "@/lib/data";
+import { trustFeatures } from "@/lib/data";
 
 // All the reusable UI components for the homepage
 import { Button } from "@/components/ui/Button";
@@ -44,8 +44,8 @@ export default async function Home() {
           <Button href="/products" variant="primary" size="lg">
             مشاهده فروشگاه
           </Button>
-          <Button href="#PricingPlans" variant="secondary" size="lg">
-            درخواست پروژه
+          <Button href="https://devorastudio.ir" variant="secondary" size="lg">
+            خدمات
           </Button>
         </div>
       </section>
@@ -117,69 +117,6 @@ export default async function Home() {
             <Button href="/products" variant="secondary" size="lg">
               مشاهده همه محصولات در فروشگاه
             </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Plans Section ============================================================================== */}
-      <section id="PricingPlans" className="bg-gray-900 py-20 sm:py-32">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold">پلن های پروژه سفارشی</h2>
-            <p className="mt-4 text-lg text-gray-400">
-              پلنی را انتخاب کنید که با نیازهای پروژه شما هماهنگ است.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-16 text-right">
-            {pricingPlans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`bg-gray-700 p-8 rounded-lg flex flex-col relative ${
-                  plan.isFeatured ? "border-2 border-orange-400" : ""
-                }`}
-              >
-                {plan.isFeatured && (
-                  <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-orange-400 text-gray-900 px-4 py-1 rounded-full text-sm font-semibold">
-                    محبوب ترین
-                  </div>
-                )}
-                <h3 className="text-2xl font-bold">{plan.name}</h3>
-                <p className="mt-4 text-4xl font-bold text-orange-400">
-                  {plan.price}{" "}
-                  <span className="text-lg text-gray-400">تومان</span>
-                </p>
-                <p className="mt-2 text-gray-400">{plan.description}</p>
-                <ul className="space-y-4 mt-8 flex-grow">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-x-3">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="w-5 h-5 text-orange-400 flex-shrink-0"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.052-.143Z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  href={`/contact?plan=${plan.planQuery}`}
-                  variant={
-                    plan.buttonVariant as "primary" | "secondary" | "tertiary"
-                  }
-                  size="lg"
-                  className="mt-8 w-full"
-                >
-                  ثبت سفارش
-                </Button>
-              </div>
-            ))}
           </div>
         </div>
       </section>
