@@ -2,11 +2,24 @@ import { Button } from "@/components/ui/Button";
 export default function CtaCard() {
   return (
     <div className="bg-orange-400 p-6 rounded-lg text-right text-gray-900">
-      <h3 className="font-bold text-2xl">پروژه‌ای در ذهن دارید؟</h3>
-      <p className="my-2">برای دریافت مشاوره رایگان و شروع پروژه بعدی خود با ما تماس بگیرید.</p>
-      <Button href="/contact" variant="secondary" className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white mt-4">
-        تماس با ما
-      </Button>
+      <h3 className="text-2xl font-bold text-white">
+        آیا برای پروژه‌ی خود به کمک نیاز دارید؟
+      </h3>
+      <p className="mt-2 text-gray-400 max-w-xl mx-auto">
+        تیم ما در Devora آماده است تا ایده‌های شما را به راه‌حل‌های دیجیتال
+        قدرتمند تبدیل کند.
+      </p>
+      <div className="mt-6">
+        <Button
+          href="https://devorastudio.ir"
+          variant="primary"
+          size="lg"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          با تیم ما در Devora تماس بگیرید
+        </Button>
+      </div>
     </div>
   );
 }
