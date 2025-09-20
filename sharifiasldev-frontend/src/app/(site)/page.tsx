@@ -122,7 +122,7 @@ export default async function Home() {
       </section>
 
       {/* Trust Section ======================================================================================== */}
-      <section className="bg-gray-800 py-20 sm:py-32">
+      <section className="bg-gray-900 py-20 sm:py-32">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="text-right">
@@ -159,23 +159,6 @@ export default async function Home() {
                 className="object-cover"
               />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Vision Section ======================================================================================= */}
-      <section className="bg-gray-900 py-20 sm:py-32">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-bold">درباره ما و چشم‌انداز آینده</h2>
-            <h3 className="text-3xl font-bold mt-16 text-orange-400">
-              چشم‌انداز: Devora
-            </h3>
-            <p className="mt-4 text-lg text-gray-400 leading-relaxed">
-              تیم Devora که به زودی به مجموعه ما اضافه خواهد شد، متشکل از
-              متخصصان خلاق و متعهدی است که به ما این امکان را می‌دهد تا
-              پروژه‌های بزرگتر و پیچیده‌تری را به سرانجام برسانیم.
-            </p>
           </div>
         </div>
       </section>
