@@ -42,10 +42,10 @@ export default async function Header() {
   // This is the static part of your menu
   const staticMenu = [
     { title: "بلاگ", link: "/blog" },
-    { title: "نمونه کار", link: "/portfolio" },
+    { title: "نمونه کارها", link: "/portfolio" },
     { title: "خدمات", link: "https://devorastudio.ir" },
-    { title: "درباره", link: "/about" },
-    { title: "تماس", link: "/contact" },
+    { title: "درباره من", link: "/about" },
+    { title: "تماس با من", link: "/contact" },
   ];
 
   const menu = [
