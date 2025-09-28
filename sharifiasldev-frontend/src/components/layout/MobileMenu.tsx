@@ -26,7 +26,7 @@ export default function MobileMenu() {
   };
 
   return (
-    <div className="md:hidden" ref={menuRef}>
+    <div className="lg:hidden" ref={menuRef}>
       <button onClick={toggleMenu} className="z-50 relative">
         {isOpen ? (
           <svg

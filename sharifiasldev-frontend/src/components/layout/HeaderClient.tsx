@@ -50,7 +50,7 @@ export default function HeaderClient({ session, menu }: HeaderClientProps) {
         </Link>
 
         {/* Desktop Menu (hidden on mobile) */}
-        <ul className="hidden md:flex items-center gap-x-6">
+        <ul className="hidden lg:flex items-center gap-x-6">
           {menu.map((item) => (
             <li key={item.link}>
               {item.submenu ? (
