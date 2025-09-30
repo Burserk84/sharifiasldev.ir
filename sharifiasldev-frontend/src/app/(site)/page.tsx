@@ -41,11 +41,15 @@ export default async function Home() {
           اپلیکیشن‌های مدرن
         </p>
         <div className="flex gap-4 mt-8">
-          <Button href="/products" variant="primary" size="lg">
-            مشاهده فروشگاه
+          <Button href="#contact" variant="primary" size="lg">
+            درخواست مشاوره پروژه
           </Button>
-          <Button href="https://devorastudio.ir" variant="secondary" size="lg">
-            خدمات
+          <Button
+            href="https://www.sharifiasldev.ir/portfolio"
+            variant="secondary"
+            size="lg"
+          >
+            مشاهده نمونه‌کارها
           </Button>
         </div>
       </section>
@@ -164,7 +168,7 @@ export default async function Home() {
       </section>
 
       {/* Contact Section ====================================================================================== */}
-      <section className="bg-gray-800 py-20 sm:py-32">
+      <section className="bg-gray-800 py-20 sm:py-32" id="contact">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-4xl font-bold">ایده‌ای در ذهن دارید؟</h2>
