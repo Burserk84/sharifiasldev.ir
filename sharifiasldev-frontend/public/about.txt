@@ -2,5 +2,5 @@ This favicon was generated using the following font:
 
 - Font Title: Geist Mono
 - Font Author: undefined
-- Font Source: https://fonts.gstatic.com/s/geistmono/v3/or3yQ6H-1_WfwkMZI_qYPLs1a-t7PU0AbeG9L55T7ihaO_CS.ttf
+- Font Source: https://fonts.gstatic.com/s/geistmono/v3/or3yQ6H-1_WfwkMZI_qYPLs1a-t7PU0AbeGUL55T7ihaO_CS.ttf
 - Font License: undefined)
