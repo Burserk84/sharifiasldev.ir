@@ -589,10 +589,16 @@ export interface ApiSubmissionSubmission extends Schema.CollectionType {
       'admin::user'
     > &
       Attribute.Private;
-    email: Attribute.Email;
-    message: Attribute.Text;
-    name: Attribute.String;
+    email: Attribute.Email & Attribute.Required;
+    message: Attribute.Text & Attribute.Required;
+    name: Attribute.String & Attribute.Required;
+    proposedBudget: Attribute.Decimal;
     publishedAt: Attribute.DateTime;
+    purpose: Attribute.Enumeration<['consultation', 'project', 'other']> &
+      Attribute.Required &
+      Attribute.DefaultTo<'consultation'>;
+    source: Attribute.String;
+    techStack: Attribute.Text;
     updatedAt: Attribute.DateTime;
     updatedBy: Attribute.Relation<
       'api::submission.submission',

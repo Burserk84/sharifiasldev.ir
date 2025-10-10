@@ -6,19 +6,21 @@
     "pluralName": "submissions",
     "displayName": "Submission"
   },
-  "options": {
-    "draftAndPublish": true
-  },
+  "options": { "draftAndPublish": true },
   "pluginOptions": {},
   "attributes": {
-    "name": {
-      "type": "string"
+    "name": { "type": "string", "required": true },
+    "email": { "type": "email", "required": true },
+    "message": { "type": "text", "required": true },
+
+    "purpose": {
+      "type": "enumeration",
+      "enum": ["consultation", "project", "other"],
+      "required": true,
+      "default": "consultation"
     },
-    "email": {
-      "type": "email"
-    },
-    "message": {
-      "type": "text"
-    }
+    "proposedBudget": { "type": "decimal" },
+    "techStack": { "type": "text" },
+    "source": { "type": "string" }
   }
 }

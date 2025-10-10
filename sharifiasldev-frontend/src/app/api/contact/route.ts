@@ -1,48 +1,50 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-/**
- * @file src/app/api/contact/route.ts
- * @description این API Route داده‌های فرم تماس را دریافت کرده و به Strapi ارسال می‌کند.
- */
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    // ۱. دریافت داده‌های JSON از درخواست فرانت‌اند
-    const { name, email, message } = await request.json();
+    const body = await req.json();
+    const {
+      name,
+      email,
+      message,
+      purpose = "consultation",
+      proposedBudget,
+      techStack,
+      source = "contact-page",
+    } = body;
 
-    // آدرس اندپوینت Strapi برای ذخیره پیام‌ها
-    const strapiUrl = `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/submissions`;
-
-    // ۲. آماده‌سازی داده‌ها برای ارسال به Strapi (نیاز به یک آبجکت data دارد)
-    const submissionData = {
-      data: {
-        name,
-        email,
-        message,
-      },
-    };
-
-    // ۳. ارسال درخواست POST به Strapi برای ذخیره داده‌ها
-    const res = await fetch(strapiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(submissionData),
-    });
-
-    // ۴. بررسی پاسخ از سمت Strapi و مدیریت خطا
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.error("Strapi Error:", errorData);
-      throw new Error('Failed to submit form to Strapi');
+    if (!name || !email || !message)
+      return NextResponse.json({ error: "invalid" }, { status: 400 });
+    if (purpose === "project" && (!proposedBudget || !techStack)) {
+      return NextResponse.json(
+        { error: "need_project_fields" },
+        { status: 400 }
+      );
     }
 
-    // ۵. ارسال پاسخ موفقیت‌آمیز به فرانت‌اند
-    return NextResponse.json({ success: true, message: 'Message sent successfully!' });
+    const res = await fetch(`${process.env.CMS_URL}/api/submissions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.CMS_TOKEN}`,
+      },
+      body: JSON.stringify({
+        data: {
+          name,
+          email,
+          message,
+          purpose,
+          proposedBudget,
+          techStack,
+          source,
+        },
+      }),
+    });
 
-  } catch (error) {
-    // مدیریت خطاهای کلی در سرور
-    console.error("API Route Error:", error);
-    return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
+    if (!res.ok)
+      return NextResponse.json({ error: "strapi_failed" }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    return NextResponse.json({ error: "server" + e }, { status: 500 });
   }
 }

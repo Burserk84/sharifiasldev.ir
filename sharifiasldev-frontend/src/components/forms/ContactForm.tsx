@@ -1,61 +1,73 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-/**
- * @file src/components/forms/ContactForm.tsx
- * @description یک کامپوننت سمت کلاینت برای فرم تماس که وضعیت ارسال را مدیریت می‌کند.
- */
-
-// تعریف تایپ برای وضعیت‌های مختلف فرم جهت خوانایی بهتر
 type SubmissionStatus = "idle" | "loading" | "success" | "error";
+type Purpose = "consultation" | "project" | "other";
 
 export default function ContactForm() {
-  // Stateها برای مدیریت مقادیر ورودی فرم و وضعیت ارسال
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [purpose, setPurpose] = useState<Purpose>("consultation");
+  const [proposedBudget, setProposedBudget] = useState(""); // string برای ماسک
+  const [techStack, setTechStack] = useState("");
   const [status, setStatus] = useState<SubmissionStatus>("idle");
 
-  /**
-   * این تابع هنگام ارسال فرم اجرا می‌شود.
-   * داده‌ها را به API Route داخلی Next.js ارسال می‌کند.
-   */
+  const inputStyles =
+    "w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50";
+
+  const isProject = purpose === "project";
+
+  // ماسک نمایش سه‌رقمی (ارسال عدد خالص)
+  const budgetDisplay = useMemo(() => {
+    const digits = proposedBudget.replace(/[^\d]/g, "");
+    return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }, [proposedBudget]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("loading");
 
     try {
+      // اعتبارسنجی حداقلی
+      if (!name || !email || !message) throw new Error("invalid");
+      if (isProject && (!proposedBudget || !techStack))
+        throw new Error("invalid");
+
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, message }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          purpose,
+          proposedBudget: Number(budgetDisplay.replace(/,/g, "")), // به عدد تبدیل شود
+          techStack,
+          source: "contact-page",
+        }),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to send message.");
-      }
+      if (!res.ok) throw new Error("Failed to send message.");
 
       setStatus("success");
-      // پاک کردن فیلدهای فرم در صورت ارسال موفقیت‌آمیز
       setName("");
       setEmail("");
       setMessage("");
+      setPurpose("consultation");
+      setProposedBudget("");
+      setTechStack("");
     } catch (error) {
       console.error(error);
       setStatus("error");
     }
   };
 
-  // نگهداری استایل‌های تکراری در یک متغیر برای تمیز بودن کد
-  const inputStyles =
-    "w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50";
-
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
+      {/* نام / ایمیل */}
       <div className="flex flex-col sm:flex-row gap-6 mb-6">
         <input
           type="text"
@@ -76,6 +88,57 @@ export default function ContactForm() {
           className={inputStyles}
         />
       </div>
+
+      {/* هدف تماس + فیلدهای شرطی پروژه */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+        <div>
+          <label className="block mb-2 text-sm text-gray-300">هدف تماس</label>
+          <select
+            value={purpose}
+            onChange={(e) => setPurpose(e.target.value as Purpose)}
+            className={inputStyles}
+            disabled={status === "loading"}
+          >
+            <option value="consultation">مشاوره</option>
+            <option value="project">درخواست پروژه</option>
+            <option value="other">سایر</option>
+          </select>
+        </div>
+
+        {isProject && (
+          <>
+            <div>
+              <label className="block mb-2 text-sm text-gray-300">
+                قیمت پیشنهادی (تومان)
+              </label>
+              <input
+                inputMode="numeric"
+                placeholder="مثلاً 25,000,000"
+                value={budgetDisplay}
+                onChange={(e) => setProposedBudget(e.target.value)}
+                required
+                className={inputStyles}
+                disabled={status === "loading"}
+              />
+            </div>
+            <div>
+              <label className="block mb-2 text-sm text-gray-300">
+                تکنولوژی‌های مدنظر
+              </label>
+              <input
+                type="text"
+                placeholder="Next.js, Node.js, PostgreSQL, ..."
+                value={techStack}
+                onChange={(e) => setTechStack(e.target.value)}
+                required
+                className={inputStyles}
+                disabled={status === "loading"}
+              />
+            </div>
+          </>
+        )}
+      </div>
+
       <textarea
         placeholder="پیغام شما..."
         value={message}
@@ -84,7 +147,7 @@ export default function ContactForm() {
         rows={6}
         disabled={status === "loading"}
         className={inputStyles}
-      ></textarea>
+      />
 
       <div className="text-center mt-6">
         <Button
@@ -93,26 +156,10 @@ export default function ContactForm() {
           size="lg"
           disabled={status === "loading"}
         >
-          {/* تغییر متن دکمه بر اساس وضعیت در حال ارسال بودن */}
-          {status === "loading" ? (
-            "در حال ارسال..."
-          ) : (
-            <>
-              <span>ارسال پیام</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-5 h-5 mr-2"
-              >
-                <path d="M3.105 2.289a.75.75 0 0 0-.826.95l1.414 4.949a.75.75 0 0 0 .826.551l3.22-.644a.75.75 0 0 1 0 1.488l-3.22-.644a.75.75 0 0 0-.826.551l-1.414 4.949a.75.75 0 0 0 .826.95 28.896 28.896 0 0 0 15.293-7.154.75.75 0 0 0 0-1.115A28.897 28.897 0 0 0 3.105 2.289Z" />
-              </svg>
-            </>
-          )}
+          {status === "loading" ? "در حال ارسال..." : "ارسال پیام"}
         </Button>
       </div>
 
-      {/* نمایش پیام‌های بازخورد به کاربر بر اساس وضعیت ارسال */}
       {status === "success" && (
         <p className="text-center mt-4 text-green-400">
           پیام شما با موفقیت ارسال شد!
@@ -120,7 +167,7 @@ export default function ContactForm() {
       )}
       {status === "error" && (
         <p className="text-center mt-4 text-red-400">
-          خطایی رخ داد. لطفاً دوباره تلاش کنید.
+          ورودی‌ها را بررسی کنید و دوباره تلاش کنید.
         </p>
       )}
     </form>
