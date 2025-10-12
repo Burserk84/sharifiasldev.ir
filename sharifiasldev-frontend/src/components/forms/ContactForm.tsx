@@ -27,6 +27,10 @@ export default function ContactForm() {
     return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }, [proposedBudget]);
 
+  const handleCaptcha = useCallback((tok: string) => {
+    setCaptcha(tok);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("loading");
@@ -159,7 +163,7 @@ export default function ContactForm() {
 
       <Turnstile
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY as string}
-        onVerify={(tok) => setCaptcha(tok)}
+        onVerify={handleCaptcha}
       />
 
       <div className="text-center mt-6">
