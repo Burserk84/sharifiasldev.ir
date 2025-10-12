@@ -31,18 +31,31 @@ export default function ContactForm() {
     setStatus("loading");
 
     try {
-      // اعتبارسنجی حداقلی
       if (!name || !email || !message) throw new Error("invalid");
       if (isProject && (!proposedBudget || !techStack))
         throw new Error("invalid");
+
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          purpose,
+          proposedBudget: isProject
+            ? Number(budgetDisplay.replace(/,/g, ""))
+            : undefined,
+          techStack: isProject ? techStack : undefined,
+          source: "contact-page",
+        }),
+      });
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         console.error("Contact API error:", err);
         throw new Error(err?.error || "Failed to send message.");
       }
-
-      if (!res.ok) throw new Error("Failed to send message.");
 
       setStatus("success");
       setName("");
