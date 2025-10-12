@@ -15,7 +15,7 @@ export default function ContactForm() {
   const [proposedBudget, setProposedBudget] = useState("");
   const [techStack, setTechStack] = useState("");
   const [status, setStatus] = useState<SubmissionStatus>("idle");
-  const [captcha, setCaptcha] = useState<string>("");
+  const [captcha, setCaptcha] = useState("");
 
   const inputStyles =
     "w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50";
@@ -30,7 +30,6 @@ export default function ContactForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("loading");
-
     try {
       if (!name || !email || !message) throw new Error("invalid");
       if (isProject && (!proposedBudget || !techStack))
@@ -67,11 +66,14 @@ export default function ContactForm() {
       setPurpose("consultation");
       setProposedBudget("");
       setTechStack("");
+      setCaptcha(""); // reset
     } catch (error) {
       console.error(error);
       setStatus("error");
     }
   };
+
+  const disabled = status === "loading" || !captcha;
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
@@ -156,20 +158,12 @@ export default function ContactForm() {
       />
 
       <Turnstile
-        siteKey={
-          process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
-          process.env.TURNSTILE_SITE_KEY!
-        }
+        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY as string}
         onVerify={(tok) => setCaptcha(tok)}
       />
 
       <div className="text-center mt-6">
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          disabled={status === "loading"}
-        >
+        <Button type="submit" variant="primary" size="lg" disabled={disabled}>
           {status === "loading" ? "در حال ارسال..." : "ارسال پیام"}
         </Button>
       </div>

@@ -18,26 +18,34 @@ export default function Turnstile({
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const el = document.createElement("script");
-    el.src =
-      "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad";
-    el.async = true;
-    document.head.appendChild(el);
+    if (!siteKey) return;
 
-    window.onTurnstileLoad = () => {
+    const render = () => {
       if (containerRef.current && window.turnstile) {
         window.turnstile.render(containerRef.current, {
           sitekey: siteKey,
-          callback: onVerify, // token => onVerify(token)
+          callback: (tok: string) => onVerify(tok),
+          "expired-callback": () => onVerify(""),
+          "timeout-callback": () => onVerify(""),
           action: "contact",
           theme: "auto",
         });
       }
     };
 
-    return () => {
-      document.head.removeChild(el);
-    };
+    if (typeof window.turnstile !== "undefined") {
+      render();
+    } else {
+      window.onTurnstileLoad = render;
+      const el = document.createElement("script");
+      el.src =
+        "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad";
+      el.async = true;
+      document.head.appendChild(el);
+      return () => {
+        document.head.removeChild(el);
+      };
+    }
   }, [siteKey, onVerify]);
 
   return <div ref={containerRef} className="mt-4" />;
