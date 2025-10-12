@@ -36,19 +36,11 @@ export default function ContactForm() {
       if (isProject && (!proposedBudget || !techStack))
         throw new Error("invalid");
 
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          message,
-          purpose,
-          proposedBudget: Number(budgetDisplay.replace(/,/g, "")), // به عدد تبدیل شود
-          techStack,
-          source: "contact-page",
-        }),
-      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.error("Contact API error:", err);
+        throw new Error(err?.error || "Failed to send message.");
+      }
 
       if (!res.ok) throw new Error("Failed to send message.");
 
