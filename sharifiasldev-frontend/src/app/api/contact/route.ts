@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-function reqUrl(base: string, path: string) {
-  const u = base.endsWith("/") ? base.slice(0, -1) : base;
-  return `${u}${path}`;
+function join(base: string, path: string) {
+  const b = base.endsWith("/") ? base.slice(0, -1) : base;
+  return `${b}${path}`;
 }
 
 export async function POST(req: Request) {
@@ -27,22 +27,22 @@ export async function POST(req: Request) {
       );
     }
 
-    const CMS_URL = process.env.CMS_URL;
-    const CMS_TOKEN = process.env.CMS_TOKEN;
-
+    // از CMS_URL استفاده کن؛ اگر نبود از NEXT_PUBLIC_STRAPI_URL
+    const CMS_URL = process.env.CMS_URL || process.env.NEXT_PUBLIC_STRAPI_URL;
     if (!CMS_URL)
       return NextResponse.json({ error: "missing_CMS_URL" }, { status: 500 });
-    if (!CMS_TOKEN)
-      return NextResponse.json({ error: "missing_CMS_TOKEN" }, { status: 500 });
 
-    const url = reqUrl(CMS_URL, "/api/submissions");
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (process.env.CMS_TOKEN)
+      headers.Authorization = `Bearer ${process.env.CMS_TOKEN}`;
+
+    const url = join(CMS_URL, "/api/submissions");
 
     const res = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${CMS_TOKEN}`,
-      },
+      headers,
       body: JSON.stringify({
         data: {
           name,
@@ -56,11 +56,11 @@ export async function POST(req: Request) {
       }),
     });
 
-    const text = await res.text(); // همیشه متن برگردانیم برای دیباگ
+    const text = await res.text();
     if (!res.ok) {
       console.error("Strapi error:", res.status, text);
       return NextResponse.json(
-        { error: "strapi_failed", status: res.status, details: text, url },
+        { error: "strapi_failed", status: res.status, details: text },
         { status: 502 }
       );
     }
