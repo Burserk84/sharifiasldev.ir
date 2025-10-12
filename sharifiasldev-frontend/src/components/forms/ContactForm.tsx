@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/Button";
 import { useMemo, useState } from "react";
+import Turnstile from "./Turnstile";
 
 type SubmissionStatus = "idle" | "loading" | "success" | "error";
 type Purpose = "consultation" | "project" | "other";
@@ -11,16 +12,16 @@ export default function ContactForm() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [purpose, setPurpose] = useState<Purpose>("consultation");
-  const [proposedBudget, setProposedBudget] = useState(""); // string برای ماسک
+  const [proposedBudget, setProposedBudget] = useState("");
   const [techStack, setTechStack] = useState("");
   const [status, setStatus] = useState<SubmissionStatus>("idle");
+  const [captcha, setCaptcha] = useState<string>("");
 
   const inputStyles =
     "w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50";
 
   const isProject = purpose === "project";
 
-  // ماسک نمایش سه‌رقمی (ارسال عدد خالص)
   const budgetDisplay = useMemo(() => {
     const digits = proposedBudget.replace(/[^\d]/g, "");
     return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -34,6 +35,7 @@ export default function ContactForm() {
       if (!name || !email || !message) throw new Error("invalid");
       if (isProject && (!proposedBudget || !techStack))
         throw new Error("invalid");
+      if (!captcha) throw new Error("captcha_required");
 
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -48,6 +50,7 @@ export default function ContactForm() {
             : undefined,
           techStack: isProject ? techStack : undefined,
           source: "contact-page",
+          captcha,
         }),
       });
 
@@ -72,7 +75,6 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-3xl mx-auto">
-      {/* نام / ایمیل */}
       <div className="flex flex-col sm:flex-row gap-6 mb-6">
         <input
           type="text"
@@ -94,7 +96,6 @@ export default function ContactForm() {
         />
       </div>
 
-      {/* هدف تماس + فیلدهای شرطی پروژه */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
         <div>
           <label className="block mb-2 text-sm text-gray-300">هدف تماس</label>
@@ -152,6 +153,14 @@ export default function ContactForm() {
         rows={6}
         disabled={status === "loading"}
         className={inputStyles}
+      />
+
+      <Turnstile
+        siteKey={
+          process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
+          process.env.TURNSTILE_SITE_KEY!
+        }
+        onVerify={(tok) => setCaptcha(tok)}
       />
 
       <div className="text-center mt-6">
