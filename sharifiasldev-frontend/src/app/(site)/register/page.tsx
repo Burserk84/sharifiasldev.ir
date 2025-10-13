@@ -1,49 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import Turnstile from "@/components/forms/Turnstile";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [captcha, setCaptcha] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const handleCaptcha = useCallback((tok: string) => setCaptcha(tok), []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-
-    const STRAPI_URL =
-      process.env.NEXT_PUBLIC_STRAPI_URL ||
-      "process.env.NEXT_PUBLIC_STRAPI_URL";
-
+    setLoading(true);
     try {
-      // We call the Strapi register endpoint directly
-      const res = await fetch(`${STRAPI_URL}/api/auth/local/register`, {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, email, password }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password, captcha }),
       });
-
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error.message || "Failed to register.");
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j?.error || "Failed to register.");
       }
-
-      // On success, redirect to the login page
       router.push("/login");
     } catch (err: unknown) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const inputStyles =
     "w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-400";
+
+  const disabled = loading || !captcha;
 
   return (
     <div className="container mx-auto px-6 py-24 flex justify-center">
@@ -77,10 +76,21 @@ export default function RegisterPage() {
             className={inputStyles}
           />
 
+          <Turnstile
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY as string}
+            onVerify={handleCaptcha}
+          />
+
           {error && <p className="text-red-400 text-center">{error}</p>}
 
-          <Button type="submit" variant="primary" size="lg" className="w-full">
-            ثبت نام
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            className="w-full"
+            disabled={disabled}
+          >
+            {loading ? "در حال ثبت‌نام..." : "ثبت نام"}
           </Button>
 
           <p className="text-center text-gray-400">

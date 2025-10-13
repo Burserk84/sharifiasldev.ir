@@ -1,6 +1,25 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+async function verifyTurnstile(token?: string, ip?: string) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret || !token) return false;
+  const form = new URLSearchParams();
+  form.append("secret", secret);
+  form.append("response", token);
+  if (ip) form.append("remoteip", ip);
+  const resp = await fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      body: form,
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    }
+  );
+  const data = (await resp.json()) as { success: boolean };
+  return !!data.success;
+}
+
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
@@ -8,9 +27,22 @@ export const authOptions: AuthOptions = {
       credentials: {
         identifier: { label: "Email or Username", type: "text" },
         password: { label: "Password", type: "password" },
+        captcha: { label: "Captcha", type: "text" }, // ⬅️ اضافه شد
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials) return null;
+
+        // ✅ کپچا را قبل از تماس Strapi چک کن
+        const ip = req?.headers?.["x-forwarded-for"] as string | undefined;
+        const ok = await verifyTurnstile(
+          credentials.captcha as string | undefined,
+          ip?.split(",")[0]?.trim()
+        );
+        if (!ok) {
+          // با null خطای CredentialsSignin می‌دهد و به /login برمی‌گردد
+          return null;
+        }
+
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`,
@@ -24,46 +56,35 @@ export const authOptions: AuthOptions = {
             }
           );
           const data = await res.json();
-          // If Strapi returns a user and JWT, the login is successful
-          if (data.user && data.jwt) {
-            return { ...data.user, jwt: data.jwt };
-          }
-          // If Strapi returns an error or no user, return null to trigger the error flow
+          if (data.user && data.jwt) return { ...data.user, jwt: data.jwt };
           return null;
         } catch (error) {
           console.error("Authorize error:", error);
-          // In case of a network error, also return null
           return null;
         }
       },
     }),
   ],
-  // ✨ ADD THIS PAGES OBJECT ✨
-  pages: {
-    signIn: "/login", // Tell NextAuth this is your custom login page
-    error: "/login", // On error, redirect back to the login page
-  },
+  pages: { signIn: "/login", error: "/login" },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.jwt = user.jwt;
+        token.jwt = (user as unknown).jwt;
         try {
           const profileRes = await fetch(
             `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/users/me?populate=profilePicture,coverImage`,
-            {
-              headers: { Authorization: `Bearer ${user.jwt}` },
-            }
+            { headers: { Authorization: `Bearer ${(user as unknown).jwt}` } }
           );
-          const profileData = await profileRes.json();
-          token.id = profileData.id;
-          token.username = profileData.username;
-          token.email = profileData.email;
-          token.firstName = profileData.firstName;
-          token.lastName = profileData.lastName;
-          token.profilePicture = profileData.profilePicture;
-          token.coverImage = profileData.coverImage;
-        } catch (error) {
-          console.error("JWT Callback Error:", error);
+          const p = await profileRes.json();
+          token.id = p.id;
+          token.username = p.username;
+          token.email = p.email;
+          token.firstName = p.firstName;
+          token.lastName = p.lastName;
+          token.profilePicture = p.profilePicture;
+          token.coverImage = p.coverImage;
+        } catch (e) {
+          console.error("JWT Callback Error:", e);
           return { ...token, error: "FetchError" };
         }
       }
@@ -74,12 +95,12 @@ export const authOptions: AuthOptions = {
         session.user.id = token.id;
         session.user.username = token.username;
         session.user.email = token.email;
-        session.user.firstName = token.firstName;
-        session.user.lastName = token.lastName;
-        session.user.profilePicture = token.profilePicture;
-        session.user.coverImage = token.coverImage;
+        (session.user as unknown).firstName = token.firstName;
+        (session.user as unknown).lastName = token.lastName;
+        (session.user as unknown).profilePicture = token.profilePicture;
+        (session.user as unknown).coverImage = token.coverImage;
       }
-      session.jwt = token.jwt;
+      (session as unknown).jwt = (token as unknown).jwt;
       return session;
     },
   },

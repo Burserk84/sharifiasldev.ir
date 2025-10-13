@@ -1,54 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Turnstile from "@/components/forms/Turnstile";
 
-// ✨ HELPER COMPONENT TO DISPLAY ERRORS FROM NEXTAUTH ✨
 const ErrorMessage = () => {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
-
-  // Map NextAuth error codes to user-friendly messages
-  const errorMessages: { [key: string]: string } = {
-    CredentialsSignin: "نام کاربری یا رمز عبور اشتباه است.",
+  const map: Record<string, string> = {
+    CredentialsSignin: "کپچا یا اطلاعات ورود نادرست است.",
   };
-
-  if (!error) {
-    return null;
-  }
-
-  return (
+  return error ? (
     <div className="text-red-400 text-center p-2">
-      {errorMessages[error] || "یک خطای ناشناس رخ داد. لطفاً دوباره تلاش کنید."}
+      {map[error] || "یک خطا رخ داد. دوباره تلاش کنید."}
     </div>
-  );
+  ) : null;
 };
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [captcha, setCaptcha] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleCaptcha = useCallback((tok: string) => setCaptcha(tok), []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-
-    // Let NextAuth handle the logic. It will redirect on success or
-    // redirect back to this page with an error on failure.
     await signIn("credentials", {
-      identifier, // Use the state variable that can be email or username
+      identifier,
       password,
-      callbackUrl: "/dashboard", // Where to go on success
+      captcha, // ⬅️ ارسال به authorize
+      callbackUrl: "/dashboard",
     });
-
-    // We don't need to set loading to false here, as a redirect will happen.
   };
 
   const inputStyles =
     "w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50";
+
+  const disabled = isLoading || !captcha;
 
   return (
     <div className="container mx-auto px-6 py-24 flex justify-center">
@@ -57,18 +51,15 @@ export default function LoginPage() {
           ورود به حساب کاربری
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* ✨ RENDER THE ERROR MESSAGE COMPONENT HERE ✨ */}
           <ErrorMessage />
-
           <input
-            type="text" // Changed to text to allow username or email
+            type="text"
             placeholder="ایمیل یا نام کاربری"
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
             required
             disabled={isLoading}
             className={inputStyles}
-            data-cy="login-identifier-input"
           />
           <input
             type="password"
@@ -78,7 +69,11 @@ export default function LoginPage() {
             required
             disabled={isLoading}
             className={inputStyles}
-            data-cy="login-password-input"
+          />
+
+          <Turnstile
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY as string}
+            onVerify={handleCaptcha}
           />
 
           <Button
@@ -86,8 +81,7 @@ export default function LoginPage() {
             variant="primary"
             size="lg"
             className="w-full"
-            disabled={isLoading}
-            data-cy="login-submit-button"
+            disabled={disabled}
           >
             {isLoading ? "در حال ورود..." : "ورود"}
           </Button>
