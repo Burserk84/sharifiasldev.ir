@@ -122,7 +122,7 @@ export default async function PostPage({
               <PostCard
                 key={relatedPost.id}
                 post={relatedPost}
-                className="h-80"
+                className=""
               />
             ))}
           </div>
