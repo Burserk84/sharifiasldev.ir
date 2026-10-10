@@ -32,14 +32,16 @@ function MobileMenuList({
             target={item.openInNewTab ? "_blank" : undefined}
             rel={item.openInNewTab ? "noopener noreferrer" : undefined}
             onClick={onNavigate}
-            className={`block py-3 hover:bg-gray-700 transition-colors ${
-              depth > 0 ? "text-sm text-gray-400" : ""
-            }`}
+            className={
+              depth > 0
+                ? "block py-3 text-sm text-gray-400 hover:text-orange-300 transition-colors"
+                : "block py-3 text-gray-300 hover:text-orange-300 transition-colors"
+            }
           >
             {item.title}
           </Link>
           {item.submenu && item.submenu.length > 0 && (
-            <ul className="border-t border-gray-700">
+            <ul className="border-t border-white/10">
               <MobileMenuList
                 items={item.submenu}
                 depth={depth + 1}
@@ -68,7 +70,10 @@ export default function MobileMenu({ menu }: MobileMenuProps) {
 
   return (
     <div className="lg:hidden" ref={menuRef}>
-      <button onClick={toggleMenu} className="z-50 relative flex items-center">
+      <button
+        onClick={toggleMenu}
+        className="z-50 relative flex items-center justify-center w-10 h-10 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:border-orange-400/40 hover:text-orange-400 transition-colors"
+      >
         {isOpen ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +109,7 @@ export default function MobileMenu({ menu }: MobileMenuProps) {
             // --- KEY CHANGES HERE ---
             // Changed from 'absolute' to 'fixed' to escape any parent's overflow clipping.
             // Positioned it from the top of the viewport, just below a standard header height.
-            className="fixed top-16 inset-x-0 bg-gray-800 shadow-lg z-40 max-h-[calc(100vh-4rem)] overflow-y-auto"
+            className="fixed top-16 inset-x-0 bg-black/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/50 z-40 max-h-[calc(100vh-4rem)] overflow-y-auto"
           >
             <ul className="flex flex-col items-center py-4">
               <MobileMenuList
