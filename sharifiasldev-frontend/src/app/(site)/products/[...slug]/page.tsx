@@ -1,5 +1,5 @@
 import { getProductsByCategory } from "@/lib/api";
-import ProductList from "@/components/products/ProductList"; 
+import ProductList from "@/components/products/ProductList";
 import { Metadata } from "next";
 
 interface ProductCategoryPageProps {
@@ -9,7 +9,7 @@ interface ProductCategoryPageProps {
 export async function generateMetadata({
   params,
 }: ProductCategoryPageProps): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const categoryName = slug[slug.length - 1].replace(/-/g, " ");
   return {
     title: `${categoryName} | فروشگاه`,
@@ -19,7 +19,7 @@ export async function generateMetadata({
 export default async function ProductCategoryPage({
   params,
 }: ProductCategoryPageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   const currentCategorySlug = slug[slug.length - 1];
 
   const initialProducts = await getProductsByCategory(currentCategorySlug);
