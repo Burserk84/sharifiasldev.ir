@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import AnimatedUnderline from "@/components/ui/AnimatedUnderline";
@@ -9,24 +10,33 @@ import AnimatedUnderline from "@/components/ui/AnimatedUnderline";
 const toPersianDigits = (value: number) =>
   String(value).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
 
-/** Floating stack chips around the code card (decorative).
- *  Left-side chips only appear on 2xl (≥1536px) where the container has real
- *  room outside the card — at narrower widths they got clipped at the
- *  viewport edge (sm:!hidden overrides the template's sm:inline-block). */
-const floatingChips = [
-  { label: "React", className: "-top-4 -right-6" },
-  { label: "Node.js", className: "-bottom-4 -left-8 sm:!hidden 2xl:!inline-block" },
-  { label: "Next", className: "-bottom-4 -right-8 sm:!hidden 2xl:!inline-block" },
-  { label: "TypeScript", className: "top-1/6 -left-12 sm:!hidden 2xl:!inline-block" },
-];
+/**
+ * The newest portfolio project, resolved server-side in page.tsx and handed
+ * to the hero so the showcase card renders real content (real screenshot,
+ * real stack, real description) instead of placeholder copy.
+ */
+export interface FeaturedProject {
+  title: string;
+  slug: string | null;
+  image: string | null;
+  techs: string[];
+  blurb: string | null;
+}
 
 /**
  * @file src/components/home/Hero.tsx
- * @description The redesigned homepage hero: layered backdrop (grid, glow
- * orbs, noise), editorial headline with the signature underline, dual CTA,
- * a live stats row and a glass "signature code" card.
+ * @description The homepage hero: layered backdrop (grid, glow orbs, noise),
+ * editorial headline with the signature underline, dual CTA, a live stats
+ * row, and a showcase card that presents the newest real project from
+ * Strapi (screenshot + stack + description) as a layered card stack.
  */
-export default function Hero({ projectCount = 0 }: { projectCount?: number }) {
+export default function Hero({
+  projectCount = 0,
+  featured = null,
+}: {
+  projectCount?: number;
+  featured?: FeaturedProject | null;
+}) {
   const reduceMotion = useReducedMotion();
 
   const fadeUp = (delay: number) => ({
@@ -78,7 +88,7 @@ export default function Hero({ projectCount = 0 }: { projectCount?: number }) {
             {...fadeUp(0.1)}
             className="mt-7 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl xl:text-7xl"
           >
-            کدنویسی با امضای,{" "}
+            کدنویسی با امضای{" "}
             <span className="relative inline-block">
               <span className="text-orange-400">اصالت</span>
               <AnimatedUnderline />
@@ -131,97 +141,103 @@ export default function Hero({ projectCount = 0 }: { projectCount?: number }) {
           </motion.dl>
         </div>
 
-        {/* ── Signature code card ───────────────────────────────────── */}
-        <motion.div
-          initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.9,
-            delay: 0.35,
-            ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-          }}
-          className="relative mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none"
-        >
-          {/* Floating stack chips */}
-          {floatingChips.map((chip) => (
-            <span
-              key={chip.label}
+        {/* ── Latest-project showcase (real Strapi content) ─────────── */}
+        {featured && (
+          <motion.div
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.9,
+              delay: 0.35,
+              ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+            }}
+            className="relative mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none"
+          >
+            {/* Depth plate — the "stack" of projects behind this one */}
+            <div
               aria-hidden
-              className={`glass-card animate-float absolute z-10 hidden rounded-full px-3.5 py-1.5 text-xs font-medium text-gray-200 sm:inline-block ${chip.className}`}
-            >
-              {chip.label}
-            </span>
-          ))}
+              className="glass-card absolute inset-0 hidden translate-x-4 translate-y-5 rotate-3 rounded-2xl opacity-40 sm:block"
+            />
 
-          <div className="glass-card glow-accent relative rounded-2xl shadow-2xl shadow-orange-500/10">
-            {/* Window chrome */}
-            <div className="flex items-center gap-2 border-b border-white/10 px-5 py-3.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-gray-600" />
-              <span className="h-2.5 w-2.5 rounded-full bg-gray-600" />
-              <span className="h-2.5 w-2.5 rounded-full bg-orange-400/80" />
-              <span
-                dir="ltr"
-                className="ms-auto font-mono text-xs text-gray-500"
-              >
-                signature.ts
-              </span>
-            </div>
-
-            {/* Code */}
-            <pre
-              dir="ltr"
-              className="overflow-x-auto px-6 py-6 text-left font-mono text-[0.8rem] leading-7 sm:text-sm"
+            <Link
+              href={featured.slug ? `/portfolio/${featured.slug}` : "/portfolio"}
+              className="group relative block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/70"
             >
-              <code>
-                <span className="text-orange-400">const</span>{" "}
-                <span className="text-gray-200">amirali</span>{" "}
-                <span className="text-gray-500">=</span>{" "}
-                <span className="text-gray-500">{"{"}</span>
-                {"\n  "}
-                <span className="text-gray-300">role</span>
-                <span className="text-gray-500">:</span>{" "}
-                <span className="text-orange-300">
-                  &quot;Full-Stack Developer&quot;
-                </span>
-                <span className="text-gray-500">,</span>
-                {"\n  "}
-                <span className="text-gray-300">stack</span>
-                <span className="text-gray-500">:</span>{" "}
-                <span className="text-gray-500">[</span>
-                <span className="text-orange-300">&quot;Next.js&quot;</span>
-                <span className="text-gray-500">,</span>{" "}
-                <span className="text-orange-300">&quot;Node.js&quot;</span>
-                <span className="text-gray-500">]</span>
-                <span className="text-gray-500">,</span>
-                {"\n  "}
-                <span className="text-gray-300">focus</span>
-                <span className="text-gray-500">:</span>{" "}
-                <span className="text-orange-300">
-                  &quot;clean • fast • scalable&quot;
-                </span>
-                <span className="text-gray-500">,</span>
-                {"\n  "}
-                <span className="text-gray-300">sign</span>
-                <span className="text-gray-500">:</span>{" "}
-                <span className="text-orange-400">()</span>{" "}
-                <span className="text-orange-400">=&gt;</span>{" "}
-                <span className="text-gray-200">ship</span>
-                <span className="text-gray-500">(</span>
-                <span className="text-gray-200">ideas</span>
-                <span className="text-gray-500">)</span>
-                <span className="text-gray-500">,</span>
-                {"\n"}
-                <span className="text-gray-500">{"}"}</span>
-                <span className="text-gray-500">;</span>
-                {"\n"}
-                <span className="italic text-gray-500">
-                  // امضای من: کیفیت، نه فقط کد
-                </span>
-                <span className="ms-1 inline-block h-4 w-[0.55ch] animate-pulse bg-orange-400 align-middle" />
-              </code>
-            </pre>
-          </div>
-        </motion.div>
+              <article className="glass-card glow-accent overflow-hidden rounded-2xl shadow-2xl shadow-orange-500/10 transition-colors duration-300 group-hover:border-orange-400/40">
+                {/* Card header */}
+                <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
+                  <span className="text-xs font-medium text-gray-300">
+                    آخرین پروژه منتشرشده
+                  </span>
+                  <span
+                    dir="ltr"
+                    className="font-mono text-xs text-gray-500"
+                  >
+                    {toPersianDigits(projectCount)}+
+                  </span>
+                </div>
+
+                {/* Real screenshot */}
+                <div className="relative aspect-video w-full overflow-hidden">
+                  {featured.image ? (
+                    <Image
+                      src={featured.image}
+                      alt={featured.title}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 40vw"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="bg-grid absolute inset-0 bg-gray-900/60" />
+                  )}
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent"
+                  />
+                </div>
+
+                {/* Body */}
+                <div className="p-5 sm:p-6">
+                  <h3 className="text-xl font-bold text-white transition-colors duration-300 group-hover:text-orange-400 sm:text-2xl">
+                    {featured.title}
+                  </h3>
+
+                  {featured.blurb && (
+                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-400">
+                      {featured.blurb}
+                    </p>
+                  )}
+
+                  {featured.techs.length > 0 && (
+                    <ul className="mt-4 flex flex-wrap gap-2">
+                      {featured.techs.map((tech) => (
+                        <li
+                          key={tech}
+                          dir="ltr"
+                          className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-gray-300 transition-colors group-hover:border-orange-400/30"
+                        >
+                          {tech}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
+                    <span className="text-sm font-semibold text-orange-300">
+                      مشاهده پروژه
+                    </span>
+                    <span
+                      aria-hidden
+                      className="text-orange-400 transition-transform duration-300 group-hover:-translate-x-1.5"
+                    >
+                      ←
+                    </span>
+                  </div>
+                </div>
+              </article>
+            </Link>
+          </motion.div>
+        )}
       </div>
     </section>
   );
