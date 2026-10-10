@@ -18,7 +18,7 @@ export default function ContactForm() {
   const [captcha, setCaptcha] = useState("");
 
   const inputStyles =
-    "w-full bg-gray-700 border border-gray-600 rounded-md py-3 px-4 text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50";
+    "w-full bg-white/[0.04] border border-white/10 rounded-xl py-3 px-4 text-gray-200 placeholder:text-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400/50 disabled:opacity-50";
 
   const isProject = purpose === "project";
 
@@ -102,7 +102,9 @@ export default function ContactForm() {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+      <div
+        className={`grid grid-cols-1 gap-6 mb-6 ${isProject ? "sm:grid-cols-3" : ""}`}
+      >
         <div>
           <label className="block mb-2 text-sm text-gray-300">هدف تماس</label>
           <select
