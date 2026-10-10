@@ -54,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fa" dir="rtl" suppressHydrationWarning>
+    <html lang="fa" dir="rtl" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
         className={`${vazirmatn.className} bg-black text-gray-100 flex flex-col min-h-screen`}
         suppressHydrationWarning
