@@ -1,6 +1,13 @@
 import "next-auth";
 import "next-auth/jwt";
-import { StrapiImage } from "@/lib/definitions";
+
+/** Slim media shape stored in the session cookie — only what the UI reads. */
+interface SessionMedia {
+  id: number;
+  url: string;
+  width?: number | null;
+  height?: number | null;
+}
 
 declare module "next-auth" {
   interface User {
@@ -9,8 +16,8 @@ declare module "next-auth" {
     email: string;
     firstName?: string | null;
     lastName?: string | null;
-    profilePicture?: StrapiImage | null;
-    coverImage?: StrapiImage | null;
+    profilePicture?: SessionMedia | null;
+    coverImage?: SessionMedia | null;
     jwt: string;
   }
   interface Session {
@@ -20,8 +27,8 @@ declare module "next-auth" {
       email: string;
       firstName?: string | null;
       lastName?: string | null;
-      profilePicture?: StrapiImage | null;
-      coverImage?: StrapiImage | null;
+      profilePicture?: SessionMedia | null;
+      coverImage?: SessionMedia | null;
     };
     jwt: string;
   }
@@ -32,8 +39,8 @@ declare module "next-auth/jwt" {
     username: string;
     firstName?: string | null;
     lastName?: string | null;
-    profilePicture?: StrapiImage | null;
-    coverImage?: StrapiImage | null;
+    profilePicture?: SessionMedia | null;
+    coverImage?: SessionMedia | null;
     jwt: string;
   }
 }
