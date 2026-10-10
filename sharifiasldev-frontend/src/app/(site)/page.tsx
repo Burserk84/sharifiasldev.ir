@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 
 // API functions to fetch dynamic data from Strapi
-import { getPortfolioItems, getProducts } from "@/lib/api";
+import { getPortfolioItems, getProducts, getPublicStrapiURL } from "@/lib/api";
 // Static data arrays for content that doesn't change often
 import { socialLinks, trustFeatures } from "@/lib/data";
 
@@ -13,10 +13,52 @@ import ProductSlider from "@/components/products/ProductSlider";
 import ContactForm from "@/components/forms/ContactForm";
 
 // Homepage-specific building blocks (design-system layer)
-import Hero from "@/components/home/Hero";
+import Hero, { type FeaturedProject } from "@/components/home/Hero";
 import TechMarquee from "@/components/home/TechMarquee";
 import SectionHeading from "@/components/home/SectionHeading";
 import Reveal from "@/components/home/Reveal";
+import { processTechnologies } from "@/components/ui/PortfolioCard";
+import type { DescriptionBlock, PortfolioItem } from "@/lib/definitions";
+
+/**
+ * First paragraph of a Strapi blocks description, trimmed for the hero card.
+ */
+function extractBlurb(blocks: DescriptionBlock[] | null): string | null {
+  if (!Array.isArray(blocks)) return null;
+  const paragraph = blocks.find((block) => block?.type === "paragraph");
+  const text = paragraph?.children?.map((child) => child.text).join(" ").trim();
+  if (!text) return null;
+  return text.length > 100 ? `${text.slice(0, 100).trimEnd()}…` : text;
+}
+
+/**
+ * The newest portfolio item, shaped for the hero showcase card.
+ */
+function pickFeatured(items: PortfolioItem[]): FeaturedProject | null {
+  const latest = [...items].sort((a, b) => b.id - a.id)[0];
+  if (!latest) return null;
+  const { title, slug, technologies, coverImage, description } =
+    latest.attributes;
+  const url = coverImage?.data?.attributes?.url;
+  return {
+    title,
+    slug,
+    image: url ? `${getPublicStrapiURL()}${url}` : null,
+    techs: processTechnologies(technologies).slice(0, 4),
+    blurb: extractBlurb(description),
+  };
+}
+
+/** Orbiting chips around the About monogram (decorative). Staggered delays so
+ *  they don't bob in unison; side chips hide below sm where margins get tight. */
+const orbitChips = [
+  { label: "React", className: "-top-5 -right-10", delay: "0s" },
+  { label: "Node.js", className: "-bottom-4 -left-12", delay: "1.5s" },
+  { label: "WordPress", className: "top-1/2 -left-20 hidden sm:block", delay: "3s" },
+  { label: "Next.js", className: "-bottom-5 -right-10", delay: "0.75s" },
+  { label: "TypeScript", className: "-top-5 -left-10", delay: "2.25s" },
+  { label: "Strapi", className: "top-1/2 -right-16 hidden sm:block", delay: "3.75s" },
+];
 
 /**
  * @file src/app/(site)/page.tsx
@@ -33,7 +75,7 @@ export default async function Home() {
   return (
     <div>
       {/* Hero Section ======================================================================================= */}
-      <Hero projectCount={portfolioItems.length} />
+      <Hero projectCount={portfolioItems.length} featured={pickFeatured(portfolioItems)} />
 
       {/* Tech Marquee Section =============================================================================== */}
       <TechMarquee />
@@ -72,6 +114,10 @@ export default async function Home() {
                 "TypeScript",
                 "WordPress",
                 "PostgreSQL",
+                "Tailwind CSS",
+                "Strapi",
+                "Socket.IO",
+                "Express",
               ].map((tech) => (
                 <li
                   key={tech}
@@ -114,29 +160,17 @@ export default async function Home() {
                   AS
                 </span>
               </div>
-              <span
-                aria-hidden
-                className="glass-card animate-float absolute -top-5 -right-10 rounded-full px-3.5 py-1.5 text-xs font-medium text-gray-200"
-                dir="ltr"
-              >
-                React
-              </span>
-              <span
-                aria-hidden
-                className="glass-card animate-float absolute -bottom-4 -left-12 rounded-full px-3.5 py-1.5 text-xs font-medium text-gray-200"
-                dir="ltr"
-                style={{ animationDelay: "1.5s" }}
-              >
-                Node.js
-              </span>
-              <span
-                aria-hidden
-                className="glass-card animate-float absolute top-1/2 -left-20 hidden rounded-full px-3.5 py-1.5 text-xs font-medium text-gray-200 sm:block"
-                dir="ltr"
-                style={{ animationDelay: "3s" }}
-              >
-                WordPress
-              </span>
+              {orbitChips.map((chip) => (
+                <span
+                  key={chip.label}
+                  aria-hidden
+                  className={`glass-card animate-float absolute ${chip.className} rounded-full px-3.5 py-1.5 text-xs font-medium text-gray-200`}
+                  dir="ltr"
+                  style={{ animationDelay: chip.delay }}
+                >
+                  {chip.label}
+                </span>
+              ))}
             </div>
           </Reveal>
         </div>
