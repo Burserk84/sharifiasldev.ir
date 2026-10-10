@@ -12,7 +12,6 @@ const variantStyles = {
     "bg-transparent border border-gray-500 text-gray-200 hover:bg-gray-700",
   ghost: "hover:bg-gray-700",
   tertiary: "bg-gray-600 text-gray-200 hover:bg-gray-500",
-  ghost: "hover:bg-gray-700",
 };
 
 const sizeStyles = {
