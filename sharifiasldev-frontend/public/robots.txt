@@ -3,8 +3,9 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://sharifiasldev.ir
+Host: https://www.sharifiasldev.ir
 
 # Sitemaps
-Sitemap: https://sharifiasldev.ir/sitemap.xml
-Sitemap: https://sharifiasldev.ir/server-sitemap.xml
+Sitemap: https://www.sharifiasldev.ir/sitemap.xml
+Sitemap: https://www.sharifiasldev.ir/server-sitemap.xml
+Sitemap: https://www.sharifiasldev.ir/attachment-sitemap.xml
