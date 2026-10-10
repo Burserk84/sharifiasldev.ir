@@ -43,8 +43,8 @@ function processTechnologies(techData: unknown): string[] {
       try {
         const parsed = JSON.parse(trimmed);
         return processTechnologies(parsed); // Recursively process the parsed object
-      } catch (e) {
-        return e;
+      } catch {
+        return trimmed.split(",").map((t) => t.trim()); // Graceful fallback
       }
     }
     // Sub-case B: It's a simple comma-separated string (old format)
@@ -75,17 +75,17 @@ export default function PortfolioCard({ post }: { post: IPortfolioItem }) {
 
   return (
     <Link href={`/portfolio/${item.slug}`}>
-      <div className="group bg-gray-800 rounded-lg overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-orange-500/10">
-        <div className="relative w-full aspect-video">
+      <div className="group flex h-full flex-col rounded-2xl overflow-hidden bg-gray-800 ring-1 ring-white/5 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:ring-orange-400/40 hover:shadow-2xl hover:shadow-orange-500/10">
+        <div className="relative w-full aspect-video overflow-hidden">
           <Image
             src={imageUrl}
             alt={item.title}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
         </div>
-        <div className="p-6">
+        <div className="p-6 flex flex-col flex-grow">
           <h3 className="text-2xl font-bold text-white group-hover:text-orange-400 transition-colors">
             {item.title}
           </h3>
@@ -96,7 +96,8 @@ export default function PortfolioCard({ post }: { post: IPortfolioItem }) {
             {allTechnologies.slice(0, 4).map((tech) => (
               <span
                 key={tech}
-                className="bg-gray-700 text-gray-300 text-xs font-medium px-2.5 py-1 rounded-full"
+                dir="ltr"
+                className="bg-white/5 border border-white/10 text-gray-300 text-xs font-medium px-2.5 py-1 rounded-full transition-colors group-hover:border-orange-400/30"
               >
                 {tech}
               </span>
