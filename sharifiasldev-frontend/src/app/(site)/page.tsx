@@ -1,24 +1,29 @@
 import React from "react";
-import Link from "next/link";
 import Image from "next/image";
 
 // API functions to fetch dynamic data from Strapi
 import { getPortfolioItems, getProducts } from "@/lib/api";
 // Static data arrays for content that doesn't change often
-import { trustFeatures } from "@/lib/data";
+import { socialLinks, trustFeatures } from "@/lib/data";
 
 // All the reusable UI components for the homepage
 import { Button } from "@/components/ui/Button";
-import AnimatedUnderline from "@/components/ui/AnimatedUnderline";
 import PortfolioCard from "@/components/ui/PortfolioCard";
 import ProductSlider from "@/components/products/ProductSlider";
 import ContactForm from "@/components/forms/ContactForm";
 
+// Homepage-specific building blocks (design-system layer)
+import Hero from "@/components/home/Hero";
+import TechMarquee from "@/components/home/TechMarquee";
+import SectionHeading from "@/components/home/SectionHeading";
+import Reveal from "@/components/home/Reveal";
+
 /**
  * @file src/app/(site)/page.tsx
- * @description The main component for the homepage.
- * This is a Server Component that fetches initial data from Strapi
- * before sending the page to the client.
+ * @description The redesigned homepage — a Server Component that fetches
+ * initial data from Strapi, then composes the sections:
+ * Hero → Tech Marquee → About → Portfolio → Products → Trust → Contact.
+ * Motion lives in the client children (Reveal / Hero); data stays server-side.
  */
 export default async function Home() {
   // Fetch dynamic data from Strapi on the server
@@ -28,163 +33,398 @@ export default async function Home() {
   return (
     <div>
       {/* Hero Section ======================================================================================= */}
-      <section className="flex flex-col items-center justify-center min-h-screen text-center -mt-20 px-6">
-        <h1 className="text-5xl md:text-7xl font-bold">
-          کدنویسی با امضای،{" "}
-          <span className="relative inline-block">
-            <span className="text-orange-400">اصالت</span>
-            <AnimatedUnderline />
-          </span>
-        </h1>
-        <p className="mt-4 text-lg text-gray-400 max-w-2xl">
-          توسعه‌دهنده Full-Stack با ۳ سال تجربه در ساخت وب‌سایت‌ها و
-          اپلیکیشن‌های مدرن
-        </p>
-        <div className="flex gap-4 mt-8">
-          <Button href="#contact" variant="primary" size="lg">
-            درخواست مشاوره پروژه
-          </Button>
-          <Button
-            href="https://www.sharifiasldev.ir/portfolio"
-            variant="secondary"
-            size="lg"
-          >
-            مشاهده نمونه‌کارها
-          </Button>
-        </div>
-      </section>
+      <Hero projectCount={portfolioItems.length} />
 
-      {/* About Section ======================================================================================== */}
-      <section className="bg-gray-800 py-20 sm:py-32">
-        <div className="container mx-auto flex flex-col-reverse md:flex-row items-center justify-center gap-12 px-6">
-          <div className="text-right max-w-2xl">
-            <h2 className="text-lg font-semibold text-orange-400">
-              آشنایی با متخصص شما
-            </h2>
-            <h3 className="text-4xl font-bold mt-2 text-gray-100">
-              امیرعلی شریفی اصل:{" "}
-              <span className="text-white">توسعه‌دهنده Full-stack</span>
-            </h3>
-            <p className="mt-4 text-gray-400 leading-relaxed">
+      {/* Tech Marquee Section =============================================================================== */}
+      <TechMarquee />
+
+      {/* About Section ====================================================================================== */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-gray-900 via-gray-800/60 to-gray-900 py-24 sm:py-32">
+        <div
+          aria-hidden
+          className="absolute -top-24 right-1/3 h-80 w-80 rounded-full bg-orange-500/[0.07] blur-[110px]"
+        />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-6 lg:grid-cols-12">
+          <Reveal className="order-2 text-start lg:order-1 lg:col-span-7">
+            <SectionHeading
+              align="start"
+              eyebrow="آشنایی با متخصص شما"
+              title={
+                <>
+                  امیرعلی شریفی اصل:{" "}
+                  <span className="text-gradient">توسعه‌دهنده Full-stack</span>
+                </>
+              }
+              className="[&>h2]:mt-0 [&>span]:mb-5"
+            />
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-gray-400 sm:text-lg">
               با بیش از ۳ سال تجربه در دنیای پویای وب، من علاقه‌مند به خلق
               راه‌حل‌هایی هستم که نه تنها زیبا و کارآمد هستند، بلکه تجربه‌ای
               به‌یادماندنی برای کاربران ایجاد می‌کنند. تخصص من در ساخت
               اپلیکیشن‌های سریع و مقیاس‌پذیر با استفاده از React، Node.js و
               تکنولوژی‌های مرتبط است.
             </p>
-            <Link
-              href="/about"
-              className="inline-block mt-6 text-orange-400 hover:text-orange-500 transition-colors font-semibold"
-            >
-              بیشتر درباره من و چشم انداز devora بدانید &larr;
-            </Link>
-          </div>
-          <div className="flex-shrink-0 w-60 h-60 bg-gray-700 rounded-full flex items-center justify-center">
-            <span className="text-9xl font-bold text-orange-400">AS</span>
-          </div>
+            <ul className="mt-7 flex flex-wrap gap-2.5">
+              {[
+                "React",
+                "Next.js",
+                "Node.js",
+                "TypeScript",
+                "WordPress",
+                "PostgreSQL",
+              ].map((tech) => (
+                <li
+                  key={tech}
+                  dir="ltr"
+                  className="glass-card rounded-full px-3.5 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:border-orange-400/40 hover:text-orange-300"
+                >
+                  {tech}
+                </li>
+              ))}
+            </ul>
+            <Reveal delay={0.1}>
+              <Button
+                href="/about"
+                variant="secondary"
+                className="group mt-8 h-11 rounded-full px-6"
+              >
+                بیشتر درباره من و چشم‌انداز devora
+                <span
+                  aria-hidden
+                  className="me-2 inline-block transition-transform duration-300 group-hover:-translate-x-1"
+                >
+                  ←
+                </span>
+              </Button>
+            </Reveal>
+          </Reveal>
+
+          {/* Monogram visual with orbiting chips */}
+          <Reveal
+            delay={0.15}
+            className="order-1 mx-auto lg:order-2 lg:col-span-5"
+          >
+            <div className="relative mx-auto h-64 w-64 sm:h-72 sm:w-72">
+              <div
+                aria-hidden
+                className="absolute inset-0 rounded-full bg-gradient-to-tr from-orange-500 to-orange-300 opacity-30 blur-2xl"
+              />
+              <div className="glass-card glow-accent relative flex h-full w-full items-center justify-center rounded-full bg-gray-900/80">
+                <span className="text-gradient text-7xl font-black sm:text-8xl">
+                  AS
+                </span>
+              </div>
+              <span
+                aria-hidden
+                className="glass-card animate-float absolute -top-5 -right-10 rounded-full px-3.5 py-1.5 text-xs font-medium text-gray-200"
+                dir="ltr"
+              >
+                React
+              </span>
+              <span
+                aria-hidden
+                className="glass-card animate-float absolute -bottom-4 -left-12 rounded-full px-3.5 py-1.5 text-xs font-medium text-gray-200"
+                dir="ltr"
+                style={{ animationDelay: "1.5s" }}
+              >
+                Node.js
+              </span>
+              <span
+                aria-hidden
+                className="glass-card animate-float absolute top-1/2 -left-20 hidden rounded-full px-3.5 py-1.5 text-xs font-medium text-gray-200 sm:block"
+                dir="ltr"
+                style={{ animationDelay: "3s" }}
+              >
+                WordPress
+              </span>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* Portfolio Section ================================================================================== */}
+      {/* Portfolio Section ==================================================================================== */}
       {portfolioItems.length > 0 && (
-        <section className="bg-gray-900 py-20 sm:py-32">
-          <div className="container mx-auto px-6 text-center">
-            <h2 className="text-4xl font-bold">نمونه کارها</h2>
-            <p className="mt-4 text-lg text-gray-400">
-              کیفیت را در عمل ببینید. نگاهی به بخشی از پروژه‌های موفق ما
-              بیندازید.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 text-right">
-              {portfolioItems.slice(0, 2).map((item) => (
-                <PortfolioCard key={item.id} post={item} />
+        <section className="bg-gray-900 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6">
+            <SectionHeading
+              eyebrow="نمونه‌کارها"
+              title="پروژه‌هایی که با افتخار تحویل داده‌ام"
+              description="کیفیت را در عمل ببینید. نگاهی به بخشی از پروژه‌های موفق بیندازید."
+            />
+            <div className="mt-14 grid grid-cols-1 gap-8 text-start md:grid-cols-2 lg:grid-cols-3">
+              {portfolioItems.slice(0, 3).map((item, index) => (
+                <Reveal key={item.id} delay={index * 0.1} className="h-full">
+                  <PortfolioCard post={item} />
+                </Reveal>
               ))}
             </div>
-            <div className="mt-12">
-              <Button href="/portfolio" variant="secondary" size="lg">
+            <Reveal delay={0.15} className="mt-14 text-center">
+              <Button
+                href="/portfolio"
+                variant="secondary"
+                size="lg"
+                className="h-12 rounded-full border-white/15 px-8 hover:border-orange-400/50"
+              >
                 مشاهده همه نمونه کارها
               </Button>
-            </div>
+            </Reveal>
           </div>
         </section>
       )}
 
-      {/* Product Section ====================================================================================== */}
+      {/* Product Section ======================================================================================== */}
       {products.length > 0 && (
-        <section className="bg-gray-800 py-20 sm:py-32">
-          <div className="container mx-auto px-6">
-            <div className="text-center">
-              <h2 className="text-4xl font-bold">محصولات ما</h2>
-              <p className="mt-4 text-lg text-gray-400">
-                نگاهی به جدیدترین افزونه‌ها و قالب‌های ما در فروشگاه بیندازید.
-              </p>
-            </div>
-            <div className="mt-16">
+        <section className="bg-gradient-to-b from-gray-900 to-gray-800/60 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6">
+            <SectionHeading
+              eyebrow="فروشگاه"
+              title="محصولات ما"
+              description="نگاهی به جدیدترین افزونه‌ها و قالب‌های ما در فروشگاه بیندازید."
+            />
+            <Reveal delay={0.1} className="mt-16">
               <ProductSlider products={products} />
-            </div>
-            <div className="mt-12 text-center">
-              <Button href="/products" variant="secondary" size="lg">
+            </Reveal>
+            <Reveal delay={0.15} className="mt-14 text-center">
+              <Button
+                href="/products"
+                variant="secondary"
+                size="lg"
+                className="h-12 rounded-full border-white/15 px-8 hover:border-orange-400/50"
+              >
                 مشاهده همه محصولات در فروشگاه
               </Button>
-            </div>
+            </Reveal>
           </div>
         </section>
       )}
 
-      {/* Trust Section ======================================================================================== */}
-      <section className="bg-gray-900 py-20 sm:py-32">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="text-right">
-              <h2 className="text-4xl font-bold">چرا به ما اعتماد کنید؟</h2>
-              <p className="mt-4 text-lg text-gray-400 leading-relaxed">
-                تعهد ما فراتر از کدنویسی است. ما به ساخت روابط پایدار با مشتریان
-                و ارائه ارزشی واقعی متعهدیم.
-              </p>
-              <ul className="space-y-4 mt-8">
-                {trustFeatures.map((feature) => (
-                  <li key={feature} className="flex items-center gap-x-3">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-5 h-5 text-orange-400 flex-shrink-0"
+      {/* Trust Section =========================================================================================== */}
+      <section className="bg-gray-900 py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6">
+          <SectionHeading
+            eyebrow="چرا devora؟"
+            title="چرا به ما اعتماد کنید؟"
+            description="تعهد ما فراتر از کدنویسی است. ما به ساخت روابط پایدار با مشتریان و ارائه ارزشی واقعی متعهدیم."
+          />
+          <div className="mt-14 grid gap-8 lg:grid-cols-12">
+            {/* Feature bento card */}
+            <Reveal className="lg:col-span-7">
+              <div className="glass-card h-full rounded-3xl p-8 sm:p-10">
+                <ul className="grid gap-4 sm:grid-cols-2">
+                  {trustFeatures.map((feature, index) => (
+                    <li
+                      key={feature}
+                      className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 transition-colors hover:border-orange-400/30"
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.052-.143Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>{feature}</span>
+                      <span
+                        aria-hidden
+                        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-orange-400/10 text-orange-400"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.052-.143Z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </span>
+                      <span className="text-sm leading-relaxed text-gray-300 sm:text-base">
+                        {feature}
+                      </span>
+                      <span className="sr-only">ویژگی {index + 1}</span>
+                    </li>
+                  ))}
+                  {/* Filler tile keeps the last row visually balanced */}
+                  <li
+                    aria-hidden
+                    className="hidden items-center justify-center rounded-2xl border border-dashed border-white/10 p-4 text-sm text-gray-400 sm:flex"
+                  >
+                    و بیش از این‌ها…
                   </li>
-                ))}
-              </ul>
-            </div>
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden">
-              <Image
-                src="/trust.webp"
-                alt="Business handshake"
-                fill
-                className="object-cover"
-              />
-            </div>
+                </ul>
+              </div>
+            </Reveal>
+
+            {/* Image card */}
+            <Reveal delay={0.15} className="lg:col-span-5">
+              <div className="relative h-full min-h-[300px] overflow-hidden rounded-3xl">
+                <Image
+                  src="/trust.webp"
+                  alt="دست دادن نمادین پس از موفقیت یک پروژه"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                />
+                <div
+                  aria-hidden
+                  className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/20 to-transparent"
+                />
+                <div className="absolute bottom-0 start-0 p-6 sm:p-8">
+                  <p className="glass-card inline-flex rounded-full px-4 py-2 text-sm font-medium text-gray-200">
+                    ۳ سال تجربه در خدمت پروژه‌های واقعی
+                  </p>
+                </div>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* Contact Section ====================================================================================== */}
-      <section className="bg-gray-800 py-20 sm:py-32" id="contact">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold">ایده‌ای در ذهن دارید؟</h2>
-            <p className="mt-4 text-lg text-gray-400">
-              بیایید آن را به واقعیت تبدیل کنیم. برای دریافت مشاوره رایگان یا
-              ثبت سفارش پروژه خود با ما تماس بگیرید.
-            </p>
-          </div>
-          <div className="mt-12">
-            <ContactForm />
-          </div>
+      {/* Contact Section ========================================================================================== */}
+      <section id="contact" className="relative overflow-hidden py-24 sm:py-32">
+        <div
+          aria-hidden
+          className="absolute -bottom-32 left-1/2 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-orange-500/[0.08] blur-[120px]"
+        />
+        <div className="relative mx-auto max-w-6xl px-6">
+          <SectionHeading
+            eyebrow="تماس با ما"
+            title={
+              <>
+                ایده‌ای در ذهن دارید؟{" "}
+                <span className="text-gradient">بسازیمش.</span>
+              </>
+            }
+            description="برای دریافت مشاوره رایگان یا ثبت سفارش پروژه خود با ما تماس بگیرید."
+          />
+          <Reveal delay={0.1} className="mt-14">
+            <div className="glass-card grid overflow-hidden rounded-3xl lg:grid-cols-5">
+              {/* Info column */}
+              <div className="border-b border-white/10 bg-gray-800/40 p-8 sm:p-10 lg:col-span-2 lg:border-b-0 lg:border-s lg:border-white/10">
+                <h3 className="text-2xl font-bold text-gray-100">
+                  بیایید گفت‌وگو کنیم
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-gray-400 sm:text-base">
+                  هر سؤالی درباره پروژه، همکاری یا قیمت‌دهی دارید، همین حالا
+                  بنویسید.
+                </p>
+                <ul className="mt-8 space-y-4 text-sm text-gray-300 sm:text-base">
+                  <li className="flex items-center gap-3">
+                    <span
+                      aria-hidden
+                      className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-orange-400/10 text-orange-400"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                    پاسخ‌گویی در کمتر از ۲۴ ساعت
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span
+                      aria-hidden
+                      className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-orange-400/10 text-orange-400"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M2.5 3.75A.75.75 0 0 1 3.25 3h13.5a.75.75 0 0 1 0 1.5H3.25a.75.75 0 0 1-.75-.75Zm1.5 3.75a.75.75 0 0 1 .75-.75h10a.75.75 0 0 1 .75.75v8.5a.75.75 0 0 1-.75.75h-10a.75.75 0 0 1-.75-.75v-8.5Zm2.5 6a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Zm5 0a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                    مشاوره اولیه رایگان
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <span
+                      aria-hidden
+                      className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-orange-400/10 text-orange-400"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M3.44 3.44A.75.75 0 0 1 4 3h12a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-1.13.65L10 12.72l-5.62 4.12A.75.75 0 0 1 3 16.19V4a.75.75 0 0 1 .44-.56Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                    برآورد شفاف قیمت و زمان‌بندی
+                  </li>
+                </ul>
+
+                <div className="mt-8 space-y-3 border-t border-white/10 pt-6">
+                  <a
+                    href="mailto:sharifiasldev@gmail.com"
+                    className="flex items-center gap-3 text-sm text-gray-300 transition-colors hover:text-orange-400"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden className="h-4 w-4 flex-shrink-0 text-orange-400/90">
+                      <path d="M3 4a2 2 0 0 0-2 2v1.168l7.414 4.237a1.25 1.25 0 0 0 1.172 0L17 7.168V6a2 2 0 0 0-2-2H3Zm15 4.307-6.646 3.798a2.75 2.75 0 0 1-2.708 0L1 8.307V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.307Z" />
+                    </svg>
+                    <span dir="ltr">sharifiasldev@gmail.com</span>
+                  </a>
+                  <a
+                    href="tel:+989925539541"
+                    className="flex items-center gap-3 text-sm text-gray-300 transition-colors hover:text-orange-400"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden className="h-4 w-4 flex-shrink-0 text-orange-400/90">
+                      <path d="M2.25 3.5A1.25 1.25 0 0 1 3.5 2.25h2.19c.6 0 1.13.42 1.24 1.01l.62 3.1a1.25 1.25 0 0 1-.55 1.28l-1.3.88a11.5 11.5 0 0 0 5.27 5.27l.88-1.3a1.25 1.25 0 0 1 1.28-.55l3.1.62c.59.11 1.01.64 1.01 1.24v2.19a1.25 1.25 0 0 1-1.25 1.25A15.25 15.25 0 0 1 2.25 3.5Z" />
+                    </svg>
+                    <span dir="ltr">+98 992 553 9541</span>
+                  </a>
+                  <a
+                    href="https://t.me/sharifiasl_dev"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 text-sm text-gray-300 transition-colors hover:text-orange-400"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden className="h-4 w-4 flex-shrink-0 text-orange-400/90">
+                      <path d="M18.5 3.5 1.9 9.9c-.9.35-.88 1.63.03 1.95l4.1 1.44 1.58 4.68c.25.74 1.2.93 1.72.34l2.2-2.5 4.2 3.1c.6.45 1.47.12 1.63-.6l2.4-11.9c.17-.86-.66-1.6-1.5-1.26ZM7.7 12.6l7.6-5.4c.3-.22.62.18.37.43l-5.53 5.5-.22 2.9-2.22-3.43Z" />
+                    </svg>
+                    <span dir="ltr">@sharifiasl_dev</span>
+                  </a>
+                </div>
+
+                <div className="mt-8">
+                  <p className="text-sm text-gray-400">
+                    یا از این طریق‌ها در ارتباط باشید:
+                  </p>
+                  <div className="mt-4 flex gap-3">
+                    {socialLinks.map((social) => (
+                      <a
+                        key={social.name}
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={social.name}
+                        className="glass-card flex h-11 w-11 items-center justify-center rounded-xl text-gray-300 transition-all hover:border-orange-400/40 hover:text-orange-400"
+                      >
+                        {social.icon}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Form column */}
+              <div className="p-8 sm:p-10 lg:col-span-3">
+                <ContactForm />
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
     </div>
