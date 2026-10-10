@@ -27,8 +27,8 @@ function MenuItem({ item }: { item: SubMenuItem }) {
         className="flex justify-between items-center px-4 py-2 text-sm text-gray-200 hover:bg-orange-400 hover:text-gray-900"
       >
         {item.title}
-        {/* نمایش آیکون فلش فقط در صورتی که آیتم دارای زیرمنو باشد */}
-        {item.submenu && (
+        {/* نمایش آیکون فلش فقط در صورتی که آیتم واقعاً زیرمنوی فعال داشته باشد */}
+        {item.submenu && item.submenu.length > 0 && (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
@@ -83,18 +83,21 @@ export default function DropdownMenu({
           className="flex items-center gap-x-1 hover:text-orange-400 transition-colors"
         >
           {title}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
-              clipRule="evenodd"
-            />
-          </svg>
+          {/* Chevron only when the item actually has children */}
+          {submenu && submenu.length > 0 && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-5 h-5"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
         </button>
       </Link>
 

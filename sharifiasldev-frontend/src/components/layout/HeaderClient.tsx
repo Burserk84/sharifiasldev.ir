@@ -7,10 +7,11 @@ import DropdownMenu from "./DropdownMenu";
 import Search from "./Search";
 import MobileMenu from "./MobileMenu";
 import { usePathname } from "next/navigation";
+import type { SubMenuItem } from "@/lib/data";
 
 interface HeaderClientProps {
   session: Session | null;
-  menu: unknown[];
+  menu: SubMenuItem[];
 }
 
 export default function HeaderClient({ session, menu }: HeaderClientProps) {
@@ -53,7 +54,7 @@ export default function HeaderClient({ session, menu }: HeaderClientProps) {
         <ul className="hidden lg:flex items-center gap-x-6">
           {menu.map((item) => (
             <li key={item.link}>
-              {item.submenu ? (
+              {item.submenu && item.submenu.length > 0 ? (
                 <DropdownMenu
                   title={item.title}
                   submenu={item.submenu}
@@ -62,6 +63,8 @@ export default function HeaderClient({ session, menu }: HeaderClientProps) {
               ) : (
                 <Link
                   href={item.link}
+                  target={item.openInNewTab ? "_blank" : undefined}
+                  rel={item.openInNewTab ? "noopener noreferrer" : undefined}
                   className={`transition-colors hover:text-orange-400 ${
                     pathname === item.link ? "text-orange-400 font-bold" : ""
                   }`}
@@ -73,7 +76,10 @@ export default function HeaderClient({ session, menu }: HeaderClientProps) {
           ))}
         </ul>
 
-        {/* Right Section: Search, Auth, and Mobile Menu Toggle */}
+        {/* Right Section: Search, Auth, and Mobile Menu Toggle.
+            Every child is now an exact-height flex box (see Search/MobileMenu
+            buttons), so items-center aligns icons with each other AND with
+            the logo/nav line. */}
         <div className="flex items-center gap-x-4">
           <Search />
 
@@ -107,7 +113,7 @@ export default function HeaderClient({ session, menu }: HeaderClientProps) {
           )}
 
           {/* MobileMenu component only shows the hamburger button on mobile */}
-          <MobileMenu />
+          <MobileMenu menu={menu} />
         </div>
       </nav>
     </header>

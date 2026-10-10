@@ -7,6 +7,30 @@ import React from "react";
  */
 
 // داده های مربوط به منو در هدر
+
+/**
+ * An item inside a (possibly nested) dropdown submenu.
+ * Used by DropdownMenu for recursive multi-level rendering.
+ */
+export interface SubMenuItem {
+  title: string;
+  link: string;
+  openInNewTab?: boolean;
+  submenu?: SubMenuItem[];
+}
+
+/**
+ * A top-level navigation menu item as passed from the server component
+ * (Header) to the client components (HeaderClient / MobileMenu).
+ * The menu is built from Strapi (Nav Item collection type).
+ */
+export interface NavMenuItem {
+  title: string;
+  link: string;
+  openInNewTab?: boolean;
+  submenu?: SubMenuItem[];
+}
+
 export interface DropdownMenuProps {
   title: string;
   submenu: SubMenuItem[];

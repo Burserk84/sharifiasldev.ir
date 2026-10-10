@@ -51,6 +51,25 @@ export interface Category {
 }
 
 /**
+ * The structure of a navigation menu item from Strapi (api::nav-item.nav-item).
+ * `parent` allows nesting items into dropdowns from the admin panel.
+ * `autoSubmenu: "categories"` makes the frontend attach the product-category
+ * tree (e.g. for the shop item) as this item's submenu.
+ */
+export interface StrapiNavItem {
+  id: number;
+  attributes: {
+    title: string;
+    link: string;
+    order: number | null;
+    enabled: boolean;
+    openInNewTab: boolean;
+    autoSubmenu: "none" | "categories";
+    parent: { data: { id: number } | null } | null;
+  };
+}
+
+/**
  * The structure for a Product, including all custom fields and relations.
  */
 export interface Product {

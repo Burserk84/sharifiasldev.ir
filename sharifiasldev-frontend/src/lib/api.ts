@@ -1,4 +1,10 @@
-import type { Category, PortfolioItem, Product, Post } from "./definitions";
+import type {
+  Category,
+  PortfolioItem,
+  Product,
+  Post,
+  StrapiNavItem,
+} from "./definitions";
 
 /**
  * @file src/lib/api.ts
@@ -96,6 +102,17 @@ export async function getPosts(): Promise<Post[]> {
  */
 export async function getCategories(): Promise<Category[]> {
   const response = await fetchAPI("/categories?populate=parent");
+  return response?.data || [];
+}
+
+/**
+ * Fetches the navigation menu items (enabled only, sorted by `order`).
+ * Managed from the Strapi admin panel (Content Manager -> Nav Item).
+ */
+export async function getNavItems(): Promise<StrapiNavItem[]> {
+  const response = await fetchAPI(
+    "/nav-items?sort=order:asc&filters[enabled][$eq]=true&populate=parent"
+  );
   return response?.data || [];
 }
 

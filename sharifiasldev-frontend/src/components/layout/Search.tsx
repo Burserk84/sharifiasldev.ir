@@ -35,7 +35,7 @@ export default function Search() {
     <div>
       <button
         onClick={() => setIsOpen(true)}
-        className="hover:text-orange-400 transition-colors"
+        className="flex items-center hover:text-orange-400 transition-colors"
         data-cy="header-search-button"
       >
         <svg

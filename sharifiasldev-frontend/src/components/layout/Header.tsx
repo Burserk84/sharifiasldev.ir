@@ -1,7 +1,8 @@
 import { getServerSession } from "next-auth";
 import HeaderClient from "./HeaderClient";
-import { getCategories } from "@/lib/api";
-import type { Category } from "@/lib/definitions";
+import { getCategories, getNavItems } from "@/lib/api";
+import type { Category, StrapiNavItem } from "@/lib/definitions";
+import type { NavMenuItem, SubMenuItem } from "@/lib/data";
 
 /**
  * A helper function that takes a flat list of categories from Strapi
@@ -11,7 +12,7 @@ const buildMenuTree = (
   categories: Category[],
   parentId: number | null = null,
   basePath: string = "/products"
-): unknown[] => {
+): SubMenuItem[] => {
   const children = categories.filter((cat) => {
     const parent = cat.attributes.parent?.data;
     return (parent ? parent.id : null) === parentId;
@@ -23,40 +24,78 @@ const buildMenuTree = (
 
   return children.map((cat) => {
     const newPath = `${basePath}/${cat.attributes.slug}`;
+    // Recursively call the function to find children of the current category
+    const submenu = buildMenuTree(categories, cat.id, newPath);
+
+    // Omit the submenu key entirely for leaf categories so no arrow/chevron
+    // is rendered for items without children.
     return {
       title: cat.attributes.name,
       link: newPath,
-      // Recursively call the function to find children of the current category
-      submenu: buildMenuTree(categories, cat.id, newPath),
+      ...(submenu.length > 0 ? { submenu } : {}),
     };
   });
 };
 
+/**
+ * Builds the navigation tree from the Strapi "Nav Item" collection.
+ * - Items with `autoSubmenu: "categories"` get the product-category tree
+ *   attached as their submenu (e.g. the shop item).
+ * - Items nested under a parent item (via the `parent` relation in Strapi)
+ *   become dropdown submenu entries, recursively.
+ * - Items without any submenu render as plain links (no empty dropdown).
+ */
+const buildNavMenu = (
+  items: StrapiNavItem[],
+  categorySubmenu: SubMenuItem[],
+  parentId: number | null = null
+): SubMenuItem[] => {
+  return items
+    .filter((item) => (item.attributes.parent?.data?.id ?? null) === parentId)
+    .map((item) => {
+      const submenu =
+        item.attributes.autoSubmenu === "categories"
+          ? categorySubmenu
+          : buildNavMenu(items, categorySubmenu, item.id);
+
+      return {
+        title: item.attributes.title,
+        link: item.attributes.link,
+        openInNewTab: item.attributes.openInNewTab,
+        ...(submenu.length > 0 ? { submenu } : {}),
+      };
+    });
+};
+
+/**
+ * Safety net: if Strapi is unreachable or has no nav items configured,
+ * the site keeps rendering this hardcoded menu instead of an empty nav.
+ */
+const fallbackMenu: NavMenuItem[] = [
+  { title: "خانه", link: "/" },
+  { title: "فروشگاه", link: "/products" },
+  { title: "بلاگ", link: "/blog" },
+  { title: "نمونه کارها", link: "/portfolio" },
+  { title: "خدمات", link: "https://devorastudio.ir" },
+  { title: "درباره من", link: "/about" },
+  { title: "تماس با من", link: "/contact" },
+];
+
 export default async function Header() {
-  const session = await getServerSession();
-  const allCategories = await getCategories();
+  const [session, allCategories, navItems] = await Promise.all([
+    getServerSession(),
+    getCategories(),
+    getNavItems(),
+  ]);
 
-  // Build the nested submenu for the store
-  const storeSubmenu = buildMenuTree(allCategories, null);
+  // Build the nested submenu for the store from product categories
+  const categorySubmenu = buildMenuTree(allCategories, null);
 
-  // This is the static part of your menu
-  const staticMenu = [
-    { title: "بلاگ", link: "/blog" },
-    { title: "نمونه کارها", link: "/portfolio" },
-    { title: "خدمات", link: "https://devorastudio.ir" },
-    { title: "درباره من", link: "/about" },
-    { title: "تماس با من", link: "/contact" },
-  ];
-
-  const menu = [
-    { title: "خانه", link: "/" },
-    {
-      title: "فروشگاه",
-      link: "/products",
-      submenu: storeSubmenu,
-    },
-    ...staticMenu,
-  ];
+  // Menu comes from Strapi; fall back to the static list if empty/unavailable
+  const menu: SubMenuItem[] =
+    navItems.length > 0
+      ? buildNavMenu(navItems, categorySubmenu)
+      : fallbackMenu;
 
   return <HeaderClient session={session} menu={menu} />;
 }
