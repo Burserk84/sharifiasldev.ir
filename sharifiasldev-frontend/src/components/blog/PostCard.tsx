@@ -21,14 +21,14 @@ export default function PostCard({ post, className = "" }: PostCardProps) {
   return (
     <Link
       href={`/blog/${slug || post.id}`}
-      className={`relative block group rounded-lg overflow-hidden shadow-lg ${className}`}
+      className={`relative block group rounded-lg overflow-hidden shadow-lg bg-neutral-900 aspect-video ${className}`}
     >
       <Image
         src={imageUrl}
         alt={title}
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        className="object-cover transition-transform duration-300 group-hover:scale-105"
+        className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
       <div className="absolute bottom-0 left-0 p-6 text-right w-full">
