@@ -1,7 +1,7 @@
 import Link from "next/link";
 export default function AuthorCard() {
   return (
-    <div className="bg-gray-800 p-6 rounded-lg text-right h-full flex flex-col justify-between">
+    <div className="bg-gray-800 p-6 rounded-lg text-right flex flex-col justify-between">
       <div>
         <h3 className="font-bold text-white mb-4">درباره نویسنده</h3>
         <div className="flex items-center gap-4">
