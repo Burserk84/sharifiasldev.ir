@@ -9,7 +9,7 @@ import { IPortfolioItem } from "@/lib/definitions";
  */
 
 // Helper function to process all possible technology formats
-function processTechnologies(techData: unknown): string[] {
+export function processTechnologies(techData: unknown): string[] {
   if (!techData) return [];
 
   // Case 1: It's a valid object (new format)
