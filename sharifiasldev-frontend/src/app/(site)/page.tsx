@@ -86,44 +86,49 @@ export default async function Home() {
       </section>
 
       {/* Portfolio Section ================================================================================== */}
-      <section className="bg-gray-900 py-20 sm:py-32">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold">نمونه کارها</h2>
-          <p className="mt-4 text-lg text-gray-400">
-            کیفیت را در عمل ببینید. نگاهی به بخشی از پروژه‌های موفق ما بیندازید.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 text-right">
-            {portfolioItems.slice(0, 2).map((item) => (
-              <PortfolioCard key={item.id} post={item} />
-            ))}
+      {portfolioItems.length > 0 && (
+        <section className="bg-gray-900 py-20 sm:py-32">
+          <div className="container mx-auto px-6 text-center">
+            <h2 className="text-4xl font-bold">نمونه کارها</h2>
+            <p className="mt-4 text-lg text-gray-400">
+              کیفیت را در عمل ببینید. نگاهی به بخشی از پروژه‌های موفق ما
+              بیندازید.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 text-right">
+              {portfolioItems.slice(0, 2).map((item) => (
+                <PortfolioCard key={item.id} post={item} />
+              ))}
+            </div>
+            <div className="mt-12">
+              <Button href="/portfolio" variant="secondary" size="lg">
+                مشاهده همه نمونه کارها
+              </Button>
+            </div>
           </div>
-          <div className="mt-12">
-            <Button href="/portfolio" variant="secondary" size="lg">
-              مشاهده همه نمونه کارها
-            </Button>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Product Section ====================================================================================== */}
-      <section className="bg-gray-800 py-20 sm:py-32">
-        <div className="container mx-auto px-6">
-          <div className="text-center">
-            <h2 className="text-4xl font-bold">محصولات ما</h2>
-            <p className="mt-4 text-lg text-gray-400">
-              نگاهی به جدیدترین افزونه‌ها و قالب‌های ما در فروشگاه بیندازید.
-            </p>
+      {products.length > 0 && (
+        <section className="bg-gray-800 py-20 sm:py-32">
+          <div className="container mx-auto px-6">
+            <div className="text-center">
+              <h2 className="text-4xl font-bold">محصولات ما</h2>
+              <p className="mt-4 text-lg text-gray-400">
+                نگاهی به جدیدترین افزونه‌ها و قالب‌های ما در فروشگاه بیندازید.
+              </p>
+            </div>
+            <div className="mt-16">
+              <ProductSlider products={products} />
+            </div>
+            <div className="mt-12 text-center">
+              <Button href="/products" variant="secondary" size="lg">
+                مشاهده همه محصولات در فروشگاه
+              </Button>
+            </div>
           </div>
-          <div className="mt-16">
-            <ProductSlider products={products} />
-          </div>
-          <div className="mt-12 text-center">
-            <Button href="/products" variant="secondary" size="lg">
-              مشاهده همه محصولات در فروشگاه
-            </Button>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Trust Section ======================================================================================== */}
       <section className="bg-gray-900 py-20 sm:py-32">
