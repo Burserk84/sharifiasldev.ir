@@ -116,7 +116,7 @@ export default async function PortfolioItemPage({
 }: {
   params: { slug: string };
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   const itemData = await getPortfolioItemBySlug(slug);
 
   if (!itemData) {
