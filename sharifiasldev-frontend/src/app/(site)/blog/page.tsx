@@ -24,7 +24,7 @@ export default async function BlogPage() {
         
         {/* ردیف اول: یک پست بزرگ در کنار کارت‌های جستجو و نویسنده */}
         <div className="col-span-12 lg:col-span-8">
-          {posts?.[0] && <PostCard post={posts[0]} className="h-96" />}
+          {posts?.[0] && <PostCard post={posts[0]} className="lg:h-96 lg:aspect-auto" />}
         </div>
         <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
           <SearchCard />
@@ -32,13 +32,13 @@ export default async function BlogPage() {
         </div>
 
         {/* ردیف دوم: دو پست متوسط در کنار کارت فراخوان (CTA) */}
-        {posts?.[1] && <PostCard post={posts[1]} className="col-span-12 lg:col-span-4 h-96" />}
-        {posts?.[2] && <PostCard post={posts[2]} className="col-span-12 lg:col-span-4 h-96" />}
+        {posts?.[1] && <PostCard post={posts[1]} className="col-span-12 lg:col-span-4" />}
+        {posts?.[2] && <PostCard post={posts[2]} className="col-span-12 lg:col-span-4" />}
         <div className="col-span-12 lg:col-span-4"><CtaCard /></div>
 
         {/* بقیه پست‌ها به صورت یک گرید استاندارد نمایش داده می‌شوند */}
         {posts?.slice(3).map(post => (
-          <PostCard key={post.id} post={post} className="col-span-12 lg:col-span-4 h-96" />
+          <PostCard key={post.id} post={post} className="col-span-12 lg:col-span-4" />
         ))}
 
       </div>
