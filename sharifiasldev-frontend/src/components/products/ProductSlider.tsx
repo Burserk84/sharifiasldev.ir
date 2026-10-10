@@ -65,13 +65,13 @@ export default function ProductSlider({ products }: { products: Product[] }) {
                   href={`/product/${slug || product.id}`}
                   className="block h-full group"
                 >
-                  <div className="bg-gray-700 p-6 rounded-lg shadow-xl text-right h-full flex flex-col transition-transform duration-300 group-hover:-translate-y-2">
+                  <div className="glass-card p-6 rounded-2xl shadow-xl text-right h-full flex flex-col transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-orange-500/10 group-hover:border-orange-400/30">
                     <div className="relative w-full aspect-video rounded-md overflow-hidden">
                       <Image
                         src={imageUrl}
                         alt={name}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                       />
                     </div>
                     <div className="flex flex-col flex-grow mt-6">
@@ -80,7 +80,7 @@ export default function ProductSlider({ products }: { products: Product[] }) {
                         {/* ✨ FIX: Use the new summary variable */}
                         {summary}
                       </p>
-                      <p className="mt-4 text-2xl font-bold text-orange-400 text-left">
+                      <p className="mt-4 text-2xl font-bold text-gradient text-left">
                         {price}
                       </p>
                     </div>
