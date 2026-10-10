@@ -20,6 +20,21 @@ async function verifyTurnstile(token?: string, ip?: string) {
   return !!data.success;
 }
 
+/** Keep ONLY what the dashboard reads (`.url`) in the session cookie.
+ * Full Strapi media objects (formats/provider/metadata) pushed the cookie past
+ * nginx's 4k proxy_buffer_size and every successful login died with a 502. */
+function pickMedia(m: unknown) {
+  if (!m || typeof m !== "object") return null;
+  const o = m as Record<string, unknown>;
+  if (typeof o.url !== "string") return null;
+  return {
+    id: typeof o.id === "number" ? o.id : 0,
+    url: o.url,
+    width: typeof o.width === "number" ? o.width : null,
+    height: typeof o.height === "number" ? o.height : null,
+  };
+}
+
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
@@ -81,8 +96,8 @@ export const authOptions: AuthOptions = {
           token.email = p.email;
           token.firstName = p.firstName;
           token.lastName = p.lastName;
-          token.profilePicture = p.profilePicture;
-          token.coverImage = p.coverImage;
+          token.profilePicture = pickMedia(p.profilePicture);
+          token.coverImage = pickMedia(p.coverImage);
         } catch (e) {
           console.error("JWT Callback Error:", e);
           return { ...token, error: "FetchError" };
