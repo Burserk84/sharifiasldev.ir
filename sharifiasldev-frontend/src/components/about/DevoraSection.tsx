@@ -2,8 +2,15 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { devoraValues, devoraTeam } from "@/lib/data"; // Import the new data
+import { devoraValues, devoraTeam } from "@/lib/data";
 
+/**
+ * @file src/components/about/DevoraSection.tsx
+ * @description The Devora vision block — content only (the page owns the
+ * section wrapper + SectionHeading). Mission/values render as a glass-card
+ * bento, the founding team as glass cards; blocks stagger-fade in once the
+ * section scrolls into view.
+ */
 export default function DevoraSection() {
   const { ref, inView } = useInView({
     triggerOnce: true,
@@ -26,86 +33,63 @@ export default function DevoraSection() {
   };
 
   return (
-    <motion.section
+    <motion.div
       ref={ref}
       initial="hidden"
       animate={inView ? "visible" : "hidden"}
       variants={containerVariants}
-      className="py-24 bg-gray-900"
+      className="mt-14 space-y-14"
     >
-      <div className="container mx-auto px-6 text-center">
-        {/* Logo and Main Title */}
-        <motion.div
-          variants={itemVariants}
-          className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6"
-        >
-          <span className="text-2xl font-bold text-orange-400">Devora</span>
-        </motion.div>
-        <motion.h2 variants={itemVariants} className="text-4xl font-bold">
-          از من به ما: تولد Devora
-        </motion.h2>
-        <motion.p
-          variants={itemVariants}
-          className="mt-4 text-lg text-gray-400 max-w-3xl mx-auto"
-        >
-          با افزایش تجربه و پیچیده‌تر شدن پروژه‌ها، نیاز به همکاری و هم‌افزایی
-          برای ارائه راه‌حل‌های بزرگتر و جامع‌تر احساس شد...
-        </motion.p>
-
-        {/* Mission and Values List */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-10 max-w-2xl mx-auto text-right space-y-3"
-        >
-          {devoraValues.map((value) => (
-            <p key={value.title} className="flex items-start">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-5 h-5 text-orange-400 ml-3 flex-shrink-0 mt-1"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.052-.143Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span>
-                <strong className="text-white">{value.title}</strong>{" "}
-                {value.text}
-              </span>
+      {/* Mission + values — two glass cards */}
+      <div className="mx-auto grid max-w-4xl gap-6 sm:grid-cols-2">
+        {devoraValues.map((value) => (
+          <motion.div
+            key={value.title}
+            variants={itemVariants}
+            className="glass-card rounded-3xl p-8"
+          >
+            <h3 className="text-lg font-bold text-gray-100">{value.title}</h3>
+            <p className="mt-3 text-sm leading-relaxed text-gray-400 sm:text-base">
+              {value.text}
             </p>
-          ))}
-        </motion.div>
+          </motion.div>
+        ))}
+      </div>
 
-        {/* Team Section */}
-        <motion.div variants={itemVariants} className="mt-16">
-          <h3 className="text-3xl font-bold">
+      {/* Founding team */}
+      <div>
+        <motion.div variants={itemVariants} className="text-center">
+          <h3 className="text-2xl font-bold text-gray-100 sm:text-3xl">
             تیم اولیه Devora (برنامه برای مهرماه)
           </h3>
-          <p className="mt-2 text-gray-400">
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
             سفر Devora با یک هسته کوچک اما متخصص و باانگیزه آغاز خواهد شد:
           </p>
         </motion.div>
 
         <motion.div
           variants={containerVariants}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 max-w-5xl mx-auto"
+          className="mx-auto mt-8 grid max-w-5xl gap-6 md:grid-cols-3"
         >
           {devoraTeam.map((member) => (
             <motion.div
               key={member.role}
               variants={itemVariants}
-              className="bg-gray-800 p-8 rounded-lg"
+              className="glass-card rounded-3xl p-8"
             >
-              <div className="text-6xl mb-4">{member.icon}</div>{" "}
-              <h4 className="text-xl font-bold">{member.role}</h4>
-              <p className="mt-2 text-gray-400">{member.description}</p>
+              <span aria-hidden className="text-4xl">
+                {member.icon}
+              </span>
+              <h4 className="mt-4 text-xl font-bold text-gray-100">
+                {member.role}
+              </h4>
+              <p className="mt-2 text-sm leading-relaxed text-gray-400">
+                {member.description}
+              </p>
             </motion.div>
           ))}
         </motion.div>
       </div>
-    </motion.section>
+    </motion.div>
   );
 }
