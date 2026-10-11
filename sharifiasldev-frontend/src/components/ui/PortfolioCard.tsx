@@ -74,7 +74,10 @@ export default function PortfolioCard({ post }: { post: IPortfolioItem }) {
     : item.title;
 
   return (
-    <Link href={`/portfolio/${item.slug}`}>
+    <Link
+      href={`/portfolio/${item.slug}`}
+      className="block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/70"
+    >
       <div className="group flex h-full flex-col rounded-2xl overflow-hidden bg-gray-800 ring-1 ring-white/5 transition-all duration-300 ease-in-out hover:-translate-y-1 hover:ring-orange-400/40 hover:shadow-2xl hover:shadow-orange-500/10">
         <div className="relative w-full aspect-video overflow-hidden">
           <Image
