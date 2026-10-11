@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getPortfolioItems, getProducts, getPublicStrapiURL } from "@/lib/api";
 // Static data arrays for content that doesn't change often
 import { socialLinks, trustFeatures } from "@/lib/data";
+import { extractBlurb } from "@/lib/format";
 
 // All the reusable UI components for the homepage
 import { Button } from "@/components/ui/Button";
@@ -18,18 +19,7 @@ import TechMarquee from "@/components/home/TechMarquee";
 import SectionHeading from "@/components/home/SectionHeading";
 import Reveal from "@/components/home/Reveal";
 import { processTechnologies } from "@/components/ui/PortfolioCard";
-import type { DescriptionBlock, PortfolioItem } from "@/lib/definitions";
-
-/**
- * First paragraph of a Strapi blocks description, trimmed for the hero card.
- */
-function extractBlurb(blocks: DescriptionBlock[] | null): string | null {
-  if (!Array.isArray(blocks)) return null;
-  const paragraph = blocks.find((block) => block?.type === "paragraph");
-  const text = paragraph?.children?.map((child) => child.text).join(" ").trim();
-  if (!text) return null;
-  return text.length > 100 ? `${text.slice(0, 100).trimEnd()}…` : text;
-}
+import type { PortfolioItem } from "@/lib/definitions";
 
 /**
  * The newest portfolio item, shaped for the hero showcase card.
