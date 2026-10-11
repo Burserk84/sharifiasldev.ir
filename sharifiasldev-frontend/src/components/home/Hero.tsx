@@ -1,27 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import AnimatedUnderline from "@/components/ui/AnimatedUnderline";
+import FeaturedProjectCard, {
+  type FeaturedProject,
+} from "@/components/home/FeaturedProjectCard";
+import { toPersianDigits } from "@/lib/format";
 
-/** Converts Latin digits to Persian digits for display. */
-const toPersianDigits = (value: number) =>
-  String(value).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
-
-/**
- * The newest portfolio project, resolved server-side in page.tsx and handed
- * to the hero so the showcase card renders real content (real screenshot,
- * real stack, real description) instead of placeholder copy.
- */
-export interface FeaturedProject {
-  title: string;
-  slug: string | null;
-  image: string | null;
-  techs: string[];
-  blurb: string | null;
-}
+/** Re-exported so the homepage can keep importing the type from this module. */
+export type { FeaturedProject };
 
 /**
  * @file src/components/home/Hero.tsx
@@ -153,89 +141,10 @@ export default function Hero({
             }}
             className="relative mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none"
           >
-            {/* Depth plate — the "stack" of projects behind this one */}
-            <div
-              aria-hidden
-              className="glass-card absolute inset-0 hidden translate-x-4 translate-y-5 rotate-3 rounded-2xl opacity-40 sm:block"
+            <FeaturedProjectCard
+              project={featured}
+              projectCount={projectCount}
             />
-
-            <Link
-              href={featured.slug ? `/portfolio/${featured.slug}` : "/portfolio"}
-              className="group relative block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/70"
-            >
-              <article className="glass-card glow-accent overflow-hidden rounded-2xl shadow-2xl shadow-orange-500/10 transition-colors duration-300 group-hover:border-orange-400/40">
-                {/* Card header */}
-                <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
-                  <span className="text-xs font-medium text-gray-300">
-                    آخرین پروژه منتشرشده
-                  </span>
-                  <span
-                    dir="ltr"
-                    className="font-mono text-xs text-gray-500"
-                  >
-                    {toPersianDigits(projectCount)}+
-                  </span>
-                </div>
-
-                {/* Real screenshot */}
-                <div className="relative aspect-video w-full overflow-hidden">
-                  {featured.image ? (
-                    <Image
-                      src={featured.image}
-                      alt={featured.title}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 40vw"
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="bg-grid absolute inset-0 bg-gray-900/60" />
-                  )}
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent"
-                  />
-                </div>
-
-                {/* Body */}
-                <div className="p-5 sm:p-6">
-                  <h3 className="text-xl font-bold text-white transition-colors duration-300 group-hover:text-orange-400 sm:text-2xl">
-                    {featured.title}
-                  </h3>
-
-                  {featured.blurb && (
-                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-400">
-                      {featured.blurb}
-                    </p>
-                  )}
-
-                  {featured.techs.length > 0 && (
-                    <ul className="mt-4 flex flex-wrap gap-2">
-                      {featured.techs.map((tech) => (
-                        <li
-                          key={tech}
-                          dir="ltr"
-                          className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-gray-300 transition-colors group-hover:border-orange-400/30"
-                        >
-                          {tech}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
-                    <span className="text-sm font-semibold text-orange-300">
-                      مشاهده پروژه
-                    </span>
-                    <span
-                      aria-hidden
-                      className="text-orange-400 transition-transform duration-300 group-hover:-translate-x-1.5"
-                    >
-                      ←
-                    </span>
-                  </div>
-                </div>
-              </article>
-            </Link>
           </motion.div>
         )}
       </div>
